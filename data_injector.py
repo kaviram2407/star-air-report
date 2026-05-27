@@ -16,7 +16,9 @@ QUERIES = {
     "silver_3_cell_3.csv": "SELECT * FROM bootcamp_2026_simulation.silver.dim_date_team3"
 }
 
-DATA_DIR = "/Users/kavismac/Desktop/star air report/extracted_data"
+# Use relative paths so it works both locally and when deployed/hosted on Streamlit Cloud
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "extracted_data")
 
 def get_secret(name, default=None):
     """Retrieve secret from Streamlit Secrets or Environment Variables"""

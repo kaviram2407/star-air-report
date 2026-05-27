@@ -93,7 +93,9 @@ AIRPORT_GEOGRAPHY = {
     'ZRH': {'City': 'Zurich', 'Country': 'Switzerland', 'Region': 'Europe'}
 }
 
-DATA_DIR = "/Users/kavismac/Desktop/star air report/extracted_data"
+# Use relative paths so it works both locally and when deployed/hosted on Streamlit Cloud
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "extracted_data")
 
 @st.cache_data
 def load_sales_data():
