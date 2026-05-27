@@ -115,8 +115,68 @@ from data_loader import (
     load_billing_data,
     load_date_dimension,
     AIRPORT_COORDS,
-    AIRPORT_GEOGRAPHY
+    AIRPORT_GEOGRAPHY,
+    get_active_connection_details
 )
+
+# Check connection credentials
+connection = get_active_connection_details()
+
+if connection is None:
+    st.title("✈️ Star Air BI Portal Connection")
+    st.markdown("### ⚠️ Database Connection Required")
+    st.markdown(
+        "To view the dashboard metrics and charts, please connect to your **Databricks SQL Warehouse** or **Snowflake Data Warehouse**."
+    )
+    
+    conn_type = st.selectbox("Select Database Source", ["Databricks", "Snowflake"])
+    
+    if conn_type == "Databricks":
+        with st.form("databricks_form"):
+            host = st.text_input("Server Hostname", placeholder="xxx.cloud.databricks.com")
+            path = st.text_input("HTTP Path", placeholder="/sql/1.0/warehouses/xxx")
+            token = st.text_input("Personal Access Token (PAT)", type="password")
+            submit = st.form_submit_button("Connect & Launch Dashboard")
+            if submit:
+                if host and path and token:
+                    st.session_state["db_credentials"] = {
+                        "DATABRICKS_SERVER_HOSTNAME": host,
+                        "DATABRICKS_HTTP_PATH": path,
+                        "DATABRICKS_ACCESS_TOKEN": token
+                    }
+                    st.success("Credentials saved! Connecting...")
+                    st.cache_data.clear()
+                    st.rerun()
+                else:
+                    st.error("Please fill in all Databricks fields.")
+    else:
+        with st.form("snowflake_form"):
+            user = st.text_input("Username")
+            pwd = st.text_input("Password", type="password")
+            acct = st.text_input("Account ID", placeholder="xy12345.us-east-2.aws")
+            wh = st.text_input("Warehouse", value="COMPUTE_WH")
+            db = st.text_input("Database", value="STAR_AIR_DB")
+            sch = st.text_input("Schema", value="GOLD")
+            submit = st.form_submit_button("Connect & Launch Dashboard")
+            if submit:
+                if user and pwd and acct and wh and db:
+                    st.session_state["db_credentials"] = {
+                        "SNOWFLAKE_USER": user,
+                        "SNOWFLAKE_PASSWORD": pwd,
+                        "SNOWFLAKE_ACCOUNT": acct,
+                        "SNOWFLAKE_WAREHOUSE": wh,
+                        "SNOWFLAKE_DATABASE": db,
+                        "SNOWFLAKE_SCHEMA": sch
+                    }
+                    st.success("Credentials saved! Connecting...")
+                    st.cache_data.clear()
+                    st.rerun()
+                else:
+                    st.error("Please fill in all Snowflake fields.")
+                    
+    st.markdown("---")
+    st.info("💡 Tip: You can also specify these credentials using environment variables or Streamlit secrets for automatic silent logins.")
+    st.stop()
 
 # Load data safely
 @st.cache_data
@@ -129,13 +189,17 @@ def get_all_data():
         date_df = load_date_dimension()
         return sales_df, route_df, uplift_df, billing_df, date_df
     except Exception as e:
-        st.error(f"Error loading data: {e}")
+        st.error(f"Error connecting/querying database: {e}")
+        if "db_credentials" in st.session_state:
+            if st.button("Reset Saved Session Credentials"):
+                del st.session_state["db_credentials"]
+                st.cache_data.clear()
+                st.rerun()
         return None, None, None, None, None
 
 sales_raw, route_raw, uplift_raw, billing_raw, date_raw = get_all_data()
 
 if sales_raw is None:
-    st.error("Could not load datasets. Please check file paths and formats.")
     st.stop()
 
 # Helper function to generate clean date columns if needed
