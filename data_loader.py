@@ -3,6 +3,8 @@ import numpy as np
 import os
 import streamlit as st
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Coordinates of airports for the map
 AIRPORT_COORDS = {
     'ADD': (9.03, 38.74), 'AKL': (-37.00, 174.79), 'BHX': (52.45, -1.74), 'BKK': (13.68, 100.75),
@@ -154,34 +156,88 @@ def query_database(query):
             cs.close()
             ctx.close()
 
-# Loader Functions querying the database directly with caching (TTL = 10 mins)
-@st.cache_data(ttl=600)
-def load_sales_data():
-    df = query_database("SELECT * FROM bootcamp_2026_simulation.gold.gold_sales_performance_team3")
-    df['Sale_Date'] = pd.to_datetime(df['Sale_Date'])
-    
-    # Map geographical features
-    df['Origin_City'] = df['Origin_Airport_Code'].map(lambda x: AIRPORT_GEOGRAPHY.get(x, {}).get('City', 'Unknown'))
-    df['Origin_Country'] = df['Origin_Airport_Code'].map(lambda x: AIRPORT_GEOGRAPHY.get(x, {}).get('Country', 'Unknown'))
-    df['Origin_Region'] = df['Origin_Airport_Code'].map(lambda x: AIRPORT_GEOGRAPHY.get(x, {}).get('Region', 'Unknown'))
-    
-    df['Dest_City'] = df['Destination_Airport_Code'].map(lambda x: AIRPORT_GEOGRAPHY.get(x, {}).get('City', 'Unknown'))
-    df['Dest_Country'] = df['Destination_Airport_Code'].map(lambda x: AIRPORT_GEOGRAPHY.get(x, {}).get('Country', 'Unknown'))
-    df['Dest_Region'] = df['Destination_Airport_Code'].map(lambda x: AIRPORT_GEOGRAPHY.get(x, {}).get('Region', 'Unknown'))
-    
-    df['Foreign_Airport_Code'] = np.where(df['Origin_Airport_Code'] == 'DXB', df['Destination_Airport_Code'], df['Origin_Airport_Code'])
-    df['Foreign_City'] = df['Foreign_Airport_Code'].map(lambda x: AIRPORT_GEOGRAPHY.get(x, {}).get('City', 'Unknown'))
-    df['Foreign_Country'] = df['Foreign_Airport_Code'].map(lambda x: AIRPORT_GEOGRAPHY.get(x, {}).get('Country', 'Unknown'))
-    df['Foreign_Region'] = df['Foreign_Airport_Code'].map(lambda x: AIRPORT_GEOGRAPHY.get(x, {}).get('Region', 'Unknown'))
-    return df
+# Helper to locate local CSV files
+def check_local_csv(filename):
+    # Check project root directory first
+    path = os.path.join(BASE_DIR, filename)
+    if os.path.exists(path):
+        return path
+    # Check extracted_data directory next
+    path_ext = os.path.join(BASE_DIR, "extracted_data", filename)
+    if os.path.exists(path_ext):
+        return path_ext
+    # Fallback to case-insensitive checks in both directories
+    search_dirs = [BASE_DIR, os.path.join(BASE_DIR, "extracted_data")]
+    for d in search_dirs:
+        if os.path.exists(d):
+            for f in os.listdir(d):
+                if f.lower() == filename.lower():
+                    return os.path.join(d, f)
+    return None
 
+# Loader Functions querying the database directly with caching, falling back to local CSVs
 @st.cache_data(ttl=600)
 def load_route_profitability_data():
-    return query_database("SELECT * FROM bootcamp_2026_simulation.gold.gold_route_profitability_team3")
+    try:
+        df = query_database("SELECT * FROM bootcamp_2026_simulation.gold.gold_route_profitability_IN1725")
+        print("Loaded route profitability from Databricks/Snowflake SQL Warehouse.")
+        return df
+    except Exception as e:
+        path = check_local_csv("gold_flight_class_occupancy_IN1725.csv")
+        if path:
+            print("Offline Mode: Aggregating route profitability from local occupancy CSV.")
+            df_occ = pd.read_csv(path)
+            groupby_cols = ['Route', 'Carrier_Name', 'Carrier_Code', 'month_name', 'quarter_label', 'year']
+            agg_df = df_occ.groupby(groupby_cols).agg({
+                'Starair_Tickets_Sold': 'sum',
+                'Starair_Revenue_AED': 'sum',
+                'Starair_Net_Revenue_AED': 'sum',
+                'Starair_Commission_AED': 'sum',
+                'Starair_Discount_AED': 'sum',
+                'Starair_Tax_AED': 'sum',
+                'Passenger_Count': 'sum',
+                'Total_Seats': 'sum'
+            }).reset_index()
+            
+            flight_counts = df_occ.groupby(groupby_cols)['Flight_no'].count().reset_index()
+            agg_df = agg_df.merge(flight_counts, on=groupby_cols)
+            
+            agg_df.rename(columns={
+                'Starair_Tickets_Sold': 'Total_Tickets_Sold',
+                'Starair_Revenue_AED': 'Revenue_AED',
+                'Starair_Net_Revenue_AED': 'Net_Revenue_AED',
+                'Starair_Commission_AED': 'Total_Commission_AED',
+                'Starair_Discount_AED': 'Total_Discount_AED',
+                'Starair_Tax_AED': 'Total_Tax_AED',
+                'Total_Seats': 'Total_Seats_Available',
+                'Flight_no': 'Total_Flights'
+            }, inplace=True)
+            
+            agg_df['month_num'] = agg_df['month_name'].map(lambda m: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].index(m) + 1 if m in ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] else 1)
+            agg_df['Avg_Fare_AED'] = (agg_df['Revenue_AED'] / agg_df['Total_Tickets_Sold']).round(2)
+            agg_df['Revenue_Per_Passenger_AED'] = (agg_df['Revenue_AED'] / agg_df['Passenger_Count']).round(2)
+            agg_df['Load_Factor_Pct'] = ((agg_df['Passenger_Count'] * 100.0) / agg_df['Total_Seats_Available']).round(2)
+            return agg_df
+        else:
+            raise RuntimeError(f"Database query failed and local CSV not found. Error: {e}")
 
 @st.cache_data(ttl=600)
 def load_uplift_data():
-    df = query_database("SELECT * FROM bootcamp_2026_simulation.gold.gold_uplift_summary_team3")
+    try:
+        df = query_database("SELECT * FROM bootcamp_2026_simulation.gold.gold_uplift_summary_IN1725")
+        print("Loaded uplift summary from Databricks/Snowflake SQL Warehouse.")
+    except Exception as e:
+        path = check_local_csv("gold_flight_class_occupancy_IN1725.csv")
+        if path:
+            print("Offline Mode: Extracting uplift summary from local occupancy CSV.")
+            df = pd.read_csv(path)
+            df['Origin_Airport_Code'] = df['Route'].apply(lambda r: str(r).split('-')[0] if '-' in str(r) else '')
+            df['Destination_Airport_Code'] = df['Route'].apply(lambda r: str(r).split('-')[1] if '-' in str(r) else '')
+            df['day_of_week'] = pd.to_datetime(df['Flight_Date']).dt.day_name()
+            df['is_weekend'] = pd.to_datetime(df['Flight_Date']).dt.dayofweek.isin([5, 6])
+        else:
+            raise RuntimeError(f"Database query failed and local CSV not found. Error: {e}")
+            
     df['Flight_Date'] = pd.to_datetime(df['Flight_Date'])
     
     df['Foreign_Airport_Code'] = np.where(df['Origin_Airport_Code'] == 'DXB', df['Destination_Airport_Code'], df['Origin_Airport_Code'])
@@ -192,12 +248,77 @@ def load_uplift_data():
 
 @st.cache_data(ttl=600)
 def load_billing_data():
-    df = query_database("SELECT * FROM bootcamp_2026_simulation.gold.gold_inward_billing_team3")
+    try:
+        df = query_database("SELECT * FROM bootcamp_2026_simulation.gold.gold_inward_billing_IN1725")
+        print("Loaded inward billing from Databricks/Snowflake SQL Warehouse.")
+    except Exception as e:
+        path = check_local_csv("gold_inward_billing_in1725.csv")
+        if path:
+            print("Offline Mode: Loaded inward billing from local CSV file.")
+            df = pd.read_csv(path)
+        else:
+            raise RuntimeError(f"Database query failed and local CSV not found. Error: {e}")
+            
     df['Billed_Date'] = pd.to_datetime(df['Billed_Date'])
     return df
 
 @st.cache_data(ttl=600)
-def load_date_dimension():
-    df = query_database("SELECT * FROM bootcamp_2026_simulation.silver.dim_date_team3")
-    df['full_date'] = pd.to_datetime(df['full_date'])
+def load_overall_revenue():
+    try:
+        df = query_database("SELECT * FROM bootcamp_2026_simulation.gold.gold_overall_revenue_IN1725")
+        print("Loaded overall revenue from Databricks/Snowflake SQL Warehouse.")
+    except Exception as e:
+        path = check_local_csv("gold_overall_revenue_in1725.csv")
+        if path:
+            print("Offline Mode: Loading and pre-aggregating overall revenue from local CSV file...")
+            df = pd.read_csv(path)
+        else:
+            raise RuntimeError(f"Database query failed and local CSV not found. Error: {e}")
+            
+    # Perform pre-aggregation to save memory and CPU inside streamlit
+    groupby_cols = ['Revenue_Date', 'month_name', 'month_num', 'quarter_label', 'year', 'Carrier_Code', 'Route', 'Inward_Available_Flag']
+    
+    # Ensure columns exist, fillna where necessary
+    numeric_cols = [
+        'Ticket_Amount_AED', 'Tax_AED', 'Agent_Commission_AED', 'Discount_AED', 
+        'Inward_Billed_Amount', 'Inward_Commission_Received', 'Revenue_Per_Ticket_AED'
+    ]
+    for c in numeric_cols:
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors='coerce').fillna(0.0)
+            
+    agg_df = df.groupby(groupby_cols).agg({
+        'Ticket_Amount_AED': 'sum',
+        'Tax_AED': 'sum',
+        'Agent_Commission_AED': 'sum',
+        'Discount_AED': 'sum',
+        'Inward_Billed_Amount': 'sum',
+        'Inward_Commission_Received': 'sum',
+        'Revenue_Per_Ticket_AED': 'sum',
+        'Ticket_Number': 'count' if 'Ticket_Number' in df.columns else 'size'
+    }).reset_index()
+    
+    agg_df.rename(columns={'Ticket_Number': 'Ticket_Count'}, inplace=True)
+    
+    # Convert dates
+    agg_df['Revenue_Date'] = pd.to_datetime(agg_df['Revenue_Date'])
+    
+    return agg_df
+
+@st.cache_data(ttl=600)
+def load_settlement_reconciliation_data():
+    try:
+        df = query_database("SELECT * FROM bootcamp_2026_simulation.gold.gold_settlement_reconciliation_IN1725")
+        print("Loaded settlement reconciliation from Databricks/Snowflake SQL Warehouse.")
+    except Exception as e:
+        path = check_local_csv("gold_settlement_reconciliation_in1725.csv")
+        if path:
+            print("Offline Mode: Loaded settlement reconciliation from local CSV.")
+            df = pd.read_csv(path)
+        else:
+            raise RuntimeError(f"Database query failed and local CSV not found. Error: {e}")
+            
+    df['Settlement_Date'] = pd.to_datetime(df['Settlement_Date'])
     return df
+
+

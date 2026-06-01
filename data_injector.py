@@ -9,11 +9,11 @@ load_dotenv()
 
 # Queries mapping to the predefined Gold views and Date dimension
 QUERIES = {
-    "gold_9_cell_9.csv": "SELECT * FROM bootcamp_2026_simulation.gold.gold_sales_performance_team3",
-    "gold_2_cell_3.csv": "SELECT * FROM bootcamp_2026_simulation.gold.gold_route_profitability_team3",
-    "gold_4_cell_4.csv": "SELECT * FROM bootcamp_2026_simulation.gold.gold_uplift_summary_team3",
-    "gold_8_cell_8.csv": "SELECT * FROM bootcamp_2026_simulation.gold.gold_inward_billing_team3",
-    "silver_3_cell_3.csv": "SELECT * FROM bootcamp_2026_simulation.silver.dim_date_team3"
+    "gold_sales_performance_in1725.csv": "SELECT * FROM bootcamp_2026_simulation.gold.gold_sales_performance_IN1725",
+    "gold_flight_class_occupancy_IN1725.csv": "SELECT * FROM bootcamp_2026_simulation.gold.gold_flight_class_occupancy_IN1725",
+    "gold_inward_billing_in1725.csv": "SELECT * FROM bootcamp_2026_simulation.gold.gold_inward_billing_IN1725",
+    "gold_settlement_reconciliation_in1725.csv": "SELECT * FROM bootcamp_2026_simulation.gold.gold_settlement_reconciliation_IN1725",
+    "gold_overall_revenue_in1725.csv": "SELECT * FROM bootcamp_2026_simulation.gold.gold_overall_revenue_IN1725"
 }
 
 # Use relative paths so it works both locally and when deployed/hosted on Streamlit Cloud

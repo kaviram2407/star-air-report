@@ -8,13 +8,13 @@ import os
 
 # Set page configuration
 st.set_page_config(
-    page_title="Star Air Business Intelligence Dashboard",
+    page_title="Star Air BI Portal",
     page_icon="✈️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for Premium Design
+# Custom CSS for Premium Design & Sidebar Animations
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
@@ -30,51 +30,124 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: -0.02em !important;
 }
 
-/* Glassmorphism card utility */
+/* Glassmorphism card utility with smooth transitions & hover glow */
 .card-container {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 16px !important;
+    padding: 24px !important;
+    margin-bottom: 20px !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
+.card-container:hover {
+    transform: translateY(-5px) !important;
+    border-color: rgba(0, 176, 255, 0.3) !important;
+    box-shadow: 0 12px 40px rgba(0, 176, 255, 0.15) !important;
+}
+
+/* Metric styling inside cards */
 .metric-header {
-    font-size: 14px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    margin-bottom: 8px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
 }
 
 .metric-value {
-    font-size: 32px;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 4px;
+    font-size: 34px !important;
+    font-weight: 750 !important;
+    color: #ffffff !important;
+    margin-bottom: 4px !important;
+    letter-spacing: -0.01em !important;
+    background: linear-gradient(135deg, #ffffff 0%, #00b0ff 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
 }
 
 .metric-delta {
-    font-size: 13px;
+    font-size: 13px !important;
     font-weight: 500;
 }
 
 .delta-up {
-    color: #00e676;
+    color: #00e676 !important;
 }
 
 .delta-down {
-    color: #ff1744;
+    color: #ff1744 !important;
 }
 
-/* Sidebar Customization */
+/* Sidebar Styling & Custom Layout */
 [data-testid="stSidebar"] {
-    background-color: #0c1017 !important;
+    background-color: #080c11 !important;
     border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Beautiful navigation tabs styling */
+[data-testid="stSidebar"] div[role="radiogroup"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding-top: 10px !important;
+}
+
+[data-testid="stSidebar"] div[role="radiogroup"] label {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px !important;
+    padding: 12px 18px !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    width: 100% !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Hide native streamlit checkmark elements */
+[data-testid="stSidebar"] div[role="radiogroup"] label div[role="presentation"],
+[data-testid="stSidebar"] div[role="radiogroup"] label [data-testid="stFiberManualRecord"] {
+    display: none !important;
+}
+
+/* Selection state */
+[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
+    background: linear-gradient(135deg, rgba(0, 176, 255, 0.12) 0%, rgba(42, 157, 143, 0.12) 100%) !important;
+    border: 1px solid rgba(0, 176, 255, 0.4) !important;
+    border-left: 5px solid #00b0ff !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 8px 24px rgba(0, 176, 255, 0.15) !important;
+    transform: scale(1.03) translateX(8px) !important;
+}
+
+/* Hover state */
+[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(0, 176, 255, 0.25) !important;
+    color: #ffffff !important;
+    transform: scale(1.02) translateX(4px) !important;
+}
+
+/* Native streamlit metrics upgrade */
+div[data-testid="stMetric"] {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+}
+div[data-testid="stMetric"]:hover {
+    transform: translateY(-3px) !important;
+    border-color: rgba(0, 176, 255, 0.2) !important;
+    box-shadow: 0 8px 25px rgba(0, 176, 255, 0.1) !important;
 }
 
 /* Custom badges */
@@ -107,22 +180,25 @@ footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# Import Data Loader functions
+# Import Data Loader functions for specified tables only
 from data_loader import (
-    load_sales_data,
     load_route_profitability_data,
     load_uplift_data,
     load_billing_data,
-    load_date_dimension,
-    AIRPORT_COORDS,
-    AIRPORT_GEOGRAPHY,
+    load_overall_revenue,
+    load_settlement_reconciliation_data,
     get_active_connection_details
 )
 
 # Check connection credentials
 connection = get_active_connection_details()
+local_csvs_exist = (
+    os.path.exists("gold_overall_revenue_in1725.csv") or
+    os.path.exists("gold_flight_class_occupancy_IN1725.csv") or
+    os.path.exists("gold_inward_billing_in1725.csv")
+)
 
-if connection is None:
+if connection is None and not local_csvs_exist:
     st.title("✈️ Star Air BI Portal Connection")
     st.markdown("### ⚠️ Database Connection Required")
     st.markdown(
@@ -182,12 +258,12 @@ if connection is None:
 @st.cache_data
 def get_all_data():
     try:
-        sales_df = load_sales_data()
         route_df = load_route_profitability_data()
         uplift_df = load_uplift_data()
         billing_df = load_billing_data()
-        date_df = load_date_dimension()
-        return sales_df, route_df, uplift_df, billing_df, date_df
+        overall_rev_df = load_overall_revenue()
+        settlement_df = load_settlement_reconciliation_data()
+        return route_df, uplift_df, billing_df, overall_rev_df, settlement_df
     except Exception as e:
         st.error(f"Error connecting/querying database: {e}")
         if "db_credentials" in st.session_state:
@@ -197,19 +273,12 @@ def get_all_data():
                 st.rerun()
         return None, None, None, None, None
 
-sales_raw, route_raw, uplift_raw, billing_raw, date_raw = get_all_data()
+route_raw, uplift_raw, billing_raw, overall_rev_raw, settlement_raw = get_all_data()
 
-if sales_raw is None:
+if overall_rev_raw is None:
     st.stop()
 
-# Helper function to generate clean date columns if needed
-def clean_date_filters(df, date_col):
-    df_sorted = df.sort_values(by=date_col)
-    years = sorted(df_sorted[date_col].dt.year.unique())
-    months = sorted(df_sorted[date_col].dt.strftime('%B').unique(), key=lambda m: datetime.strptime(m, '%B').month)
-    return years, months
-
-# Sidebar Controls & Global Filters
+# Sidebar Title & Navigation
 st.sidebar.markdown(
     "<div style='text-align: center; padding: 10px 0;'>"
     "<h2 style='color: #00b0ff; margin-bottom: 0;'>STAR AIR</h2>"
@@ -220,56 +289,44 @@ st.sidebar.markdown(
 
 st.sidebar.markdown("---")
 
-# Navigation Selector
 page = st.sidebar.radio(
     "Navigation Modules",
     [
         "📊 KPI Dashboard",
-        "✈️ Revenue & Routes",
-        "📈 Occupancy & Operations",
-        "👥 Agent Performance",
-        "🌍 Geographic Segmentation",
-        "🔍 Settlement & Billing Audit"
+        "✈️ Route Performance & Capacity",
+        "🔍 Inward Billing Audit"
     ]
 )
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("Global Filters")
 
-# Carrier Selection (Offline Mode displays Star Air)
-carriers = ["All", "Star Air"]
-selected_carrier = st.sidebar.selectbox("Carrier", carriers)
-
-# Year Filter
-years = sorted(sales_raw['year'].unique())
+# Global Year Filter
+years = sorted(overall_rev_raw['year'].unique())
 selected_years = st.sidebar.multiselect("Year", years, default=years)
 
-# Month Filter
+# Global Month Filter
 month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-all_months = sorted(sales_raw['month_name'].unique(), key=lambda m: month_order.index(m) if m in month_order else 0)
+all_months = sorted(overall_rev_raw['month_name'].unique(), key=lambda m: month_order.index(m) if m in month_order else 0)
 selected_months = st.sidebar.multiselect("Months", all_months, default=all_months)
 
 # Apply global filtering function
-def filter_dataframe(df, date_col=None, year_col='year', month_col='month_name'):
+def filter_dataframe(df, year_col='year', month_col='month_name'):
     filtered_df = df.copy()
-    if selected_carrier != "All" and "Carrier_Name" in filtered_df.columns:
-        filtered_df = filtered_df[filtered_df['Carrier_Name'] == selected_carrier]
-    
     if selected_years:
         filtered_df = filtered_df[filtered_df[year_col].isin(selected_years)]
-        
     if selected_months:
         filtered_df = filtered_df[filtered_df[month_col].isin(selected_months)]
-        
     return filtered_df
 
 # Filter all datasets dynamically
-sales_df = filter_dataframe(sales_raw)
+overall_rev_df = filter_dataframe(overall_rev_raw)
+billing_df = filter_dataframe(billing_raw, year_col='year', month_col='month_name')
 route_df = filter_dataframe(route_raw)
 uplift_df = filter_dataframe(uplift_raw)
-billing_df = filter_dataframe(billing_raw, year_col='year', month_col='month_name')
+settlement_df = filter_dataframe(settlement_raw, year_col='year', month_col='month_name')
 
-# Sidebar Context Summary & Cloud Sync Controls
+# Sidebar Sync Control
 st.sidebar.markdown("---")
 st.sidebar.subheader("🔄 Data Sync Panel")
 sync_source = st.sidebar.selectbox("Sync Target", ["Databricks", "Snowflake"])
@@ -280,8 +337,8 @@ if st.sidebar.button("Trigger Cloud Fetch"):
             success, msg = run_sync(source=sync_source.lower())
             if success:
                 st.sidebar.success(f"Successfully loaded fresh views from {sync_source}!")
-                st.cache_data.clear() # Clear streamlit cache to reload the updated data!
-                st.rerun() # Force page refresh to update all visualizations
+                st.cache_data.clear()
+                st.rerun()
             else:
                 st.sidebar.error(msg)
         except Exception as e:
@@ -289,8 +346,8 @@ if st.sidebar.button("Trigger Cloud Fetch"):
 
 st.sidebar.markdown("---")
 st.sidebar.markdown(
-    f"<div style='font-size: 12px; color: rgba(255,255,255,0.4); text-align: center;'>"
-    f"Active Filter Records: {len(sales_df):,}<br>"
+    f"<div style='font-size: 11px; color: rgba(255,255,255,0.4); text-align: center;'>"
+    f"Active Revenue Records: {len(overall_rev_df):,}<br>"
     f"Cloud Views Synchronized"
     f"</div>", 
     unsafe_allow_html=True
@@ -299,246 +356,218 @@ st.sidebar.markdown(
 # ----------------- PAGE 1: KPI DASHBOARD -----------------
 if page == "📊 KPI Dashboard":
     st.title("Executive BI Dashboard")
-    st.markdown("Overview of key performance indicators, revenue, operations, and settlement tracking.")
+    st.markdown("Overview of key performance indicators, interline revenue, and capacity profiles.")
     
-    # Calculate global metrics based on filtered datasets
-    total_rev = sales_df['Gross_Fare_AED'].sum()
-    total_net_rev = sales_df['Net_Fare_AED'].sum()
-    total_tickets = sales_df['Total_Tickets_Sold'].sum()
-    total_passengers = uplift_df['Passenger_Count'].sum()
-    avg_ticket_value = sales_df['Gross_Fare_AED'].sum() / sales_df['Total_Tickets_Sold'].sum() if sales_df['Total_Tickets_Sold'].sum() > 0 else 0
+    # Compute executive metrics from filtered overall revenue and billing data
+    total_rev = overall_rev_df['Ticket_Amount_AED'].sum()
+    total_net_rev = overall_rev_df['Revenue_Per_Ticket_AED'].sum()
+    total_tickets = overall_rev_df['Ticket_Count'].sum()
     
-    total_seats = uplift_df['Total_Seats'].sum()
-    weighted_load_factor = (uplift_df['Passenger_Count'].sum() * 100.0) / total_seats if total_seats > 0 else 0
+    total_passengers = route_df['Passenger_Count'].sum()
+    total_seats = route_df['Total_Seats_Available'].sum()
+    load_factor = (total_passengers * 100.0) / total_seats if total_seats > 0 else 0
     
-    # Billing KPIs
+    # Billing metrics
     billed_amount = billing_df['Billed_Amount'].sum()
     accepted_amount = billing_df['Accepted_Amount'].sum()
-    rejected_amount = billing_df['Rejected_Amount'].sum()
     billing_efficiency = (accepted_amount * 100.0) / billed_amount if billed_amount > 0 else 0
-    rejection_pct = (rejected_amount * 100.0) / billed_amount if billed_amount > 0 else 0
 
-    # Layout: Top Row Metrics
+    # KPI Cards Layout
     col1, col2, col3, col4 = st.columns(4)
-    
     with col1:
         st.markdown(
             f"<div class='card-container'>"
-            f"<div class='metric-header'>Gross Revenue (AED)</div>"
+            f"<div class='metric-header'>Gross Ticket Sales</div>"
             f"<div class='metric-value'>AED {total_rev/1e6:.2f}M</div>"
-            f"<div class='metric-delta'><span class='delta-up'>▲ Net: AED {total_net_rev/1e6:.2f}M</span></div>"
+            f"<div class='metric-delta'><span class='delta-up'>▲ Volume: {total_tickets:,.0f} tkts</span></div>"
             f"</div>",
             unsafe_allow_html=True
         )
-        
     with col2:
         st.markdown(
             f"<div class='card-container'>"
-            f"<div class='metric-header'>Tickets Sold</div>"
-            f"<div class='metric-value'>{total_tickets:,.0f}</div>"
-            f"<div class='metric-delta'><span class='delta-up'>Avg Fare: AED {avg_ticket_value:.2f}</span></div>"
+            f"<div class='metric-header'>Actual Net Revenue</div>"
+            f"<div class='metric-value'>AED {total_net_rev/1e6:.2f}M</div>"
+            f"<div class='metric-delta'><span class='delta-up'>▲ Net conversion: {(total_net_rev*100.0/total_rev) if total_rev > 0 else 0:.1f}%</span></div>"
             f"</div>",
             unsafe_allow_html=True
         )
-        
     with col3:
         st.markdown(
             f"<div class='card-container'>"
-            f"<div class='metric-header'>Passengers Flown</div>"
-            f"<div class='metric-value'>{total_passengers:,.0f}</div>"
-            f"<div class='metric-delta'><span class='delta-up'>Load Factor: {weighted_load_factor:.2f}%</span></div>"
+            f"<div class='metric-header'>Flown Passengers</div>"
+            f"<div class='metric-value'>{total_passengers:,.0f} pax</div>"
+            f"<div class='metric-delta'><span class='delta-up'>Load Factor: {load_factor:.2f}%</span></div>"
             f"</div>",
             unsafe_allow_html=True
         )
-        
     with col4:
         st.markdown(
             f"<div class='card-container'>"
             f"<div class='metric-header'>Billing Efficiency</div>"
             f"<div class='metric-value'>{billing_efficiency:.1f}%</div>"
-            f"<div class='metric-delta'><span class='delta-down'>Rejections: {rejection_pct:.1f}%</span></div>"
+            f"<div class='metric-delta'>Inward Interline Audit</div>"
             f"</div>",
             unsafe_allow_html=True
         )
-        
-    # Second Row: Visualizations
-    c_left, c_right = st.columns([2, 1])
-    
+
+    # Visualization Row
+    c_left, c_right = st.columns([3, 2])
     with c_left:
-        st.subheader("Monthly Sales Trend")
-        # Aggregate monthly sales
-        monthly_sales = sales_df.groupby(['year', 'month_name'])[['Gross_Fare_AED', 'Net_Fare_AED']].sum().reset_index()
-        # Sort by month order
-        monthly_sales['month_num'] = monthly_sales['month_name'].map(lambda m: month_order.index(m) if m in month_order else 0)
-        monthly_sales = monthly_sales.sort_values(by=['year', 'month_num'])
+        # Monthly Revenue Trend Line
+        monthly_sales = overall_rev_df.groupby(['year', 'month_name', 'month_num']).agg({
+            'Ticket_Amount_AED': 'sum',
+            'Revenue_Per_Ticket_AED': 'sum'
+        }).reset_index().sort_values(by=['year', 'month_num'])
         monthly_sales['Period'] = monthly_sales['month_name'] + " " + monthly_sales['year'].astype(str)
-        
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
+
+        fig_line = go.Figure()
+        fig_line.add_trace(go.Scatter(
             x=monthly_sales['Period'], 
-            y=monthly_sales['Gross_Fare_AED'],
+            y=monthly_sales['Ticket_Amount_AED'],
             mode='lines+markers',
-            name='Gross Fare (AED)',
+            name='Gross Ticket Sales',
             line=dict(color='#00b0ff', width=3),
             marker=dict(size=8)
         ))
-        fig.add_trace(go.Scatter(
+        fig_line.add_trace(go.Scatter(
             x=monthly_sales['Period'], 
-            y=monthly_sales['Net_Fare_AED'],
+            y=monthly_sales['Revenue_Per_Ticket_AED'],
             mode='lines+markers',
-            name='Net Fare (AED)',
+            name='Actual Net Revenue',
             line=dict(color='#2a9d8f', width=3, dash='dash'),
             marker=dict(size=8)
         ))
-        fig.update_layout(
+        fig_line.update_layout(
+            title=dict(
+                text="<b>Monthly Revenue Trend: Gross Sales vs. Realized Net Revenue</b>",
+                font=dict(size=14, color="#00b0ff")
+            ),
             template='plotly_dark',
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
             xaxis=dict(showgrid=False),
             yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title="Amount (AED)"),
-            margin=dict(l=0, r=0, t=20, b=0),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            margin=dict(l=20, r=20, t=50, b=20),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            transition_duration=500
         )
-        st.plotly_chart(fig, use_container_width=True)
-        
+        st.plotly_chart(fig_line, use_container_width=True)
+
     with c_right:
-        st.subheader("Revenue by Class of Travel")
-        class_rev = sales_df.groupby('Class_of_Travel')['Gross_Fare_AED'].sum().reset_index()
-        class_map = {'Y': 'Economy (Y)', 'J': 'Business (J)', 'F': 'First (F)'}
-        class_rev['Class_Name'] = class_rev['Class_of_Travel'].map(class_map)
+        # Net Revenue Funnel Waterfall
+        tax = overall_rev_df['Tax_AED'].sum()
+        agent_comm = overall_rev_df['Agent_Commission_AED'].sum()
+        discount = overall_rev_df['Discount_AED'].sum()
+        inward_billed = overall_rev_df['Inward_Billed_Amount'].sum()
+        inward_comm = overall_rev_df['Inward_Commission_Received'].sum()
+
+        fig_wf = go.Figure(go.Waterfall(
+            name="Net Revenue Funnel",
+            orientation="v",
+            measure=["relative", "relative", "relative", "relative", "relative", "relative", "total"],
+            x=["Gross Fare Sales", "Taxes Paid", "Agent Commissions", "Discounts Allowed", "Inward Billing (Partner Share)", "Inward Commission Earned", "Actual Net Revenue"],
+            textposition="outside",
+            text=[
+                f"AED {total_rev/1e6:.2f}M",
+                f"-AED {tax/1e6:.2f}M",
+                f"-AED {agent_comm/1e6:.2f}M",
+                f"-AED {discount/1e6:.2f}M",
+                f"-AED {inward_billed/1e6:.2f}M",
+                f"+AED {inward_comm/1e6:.2f}M",
+                f"AED {total_net_rev/1e6:.2f}M"
+            ],
+            y=[total_rev, -tax, -agent_comm, -discount, -inward_billed, inward_comm, total_net_rev],
+            connector=dict(line=dict(color="rgba(128, 128, 128, 0.3)", width=2)),
+            decreasing={"marker":{"color":"#ff1744"}},
+            increasing={"marker":{"color":"#00e676"}},
+            totals={"marker":{"color":"#00b0ff"}}
+        ))
         
-        fig = px.pie(
-            class_rev, 
-            values='Gross_Fare_AED', 
-            names='Class_Name',
-            hole=0.4,
-            color_discrete_sequence=['#00b0ff', '#2a9d8f', '#ffeb3b']
-        )
-        fig.update_layout(
+        fig_wf.update_layout(
+            title=dict(
+                text="<b>Net Revenue Funnel: Margin Leakages to Partners and Agents</b>",
+                font=dict(size=13, color="#00b0ff")
+            ),
             template='plotly_dark',
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
-            margin=dict(l=0, r=0, t=20, b=0),
-            legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=0.8)
+            yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title="Amount (AED)"),
+            margin=dict(l=20, r=20, t=50, b=20),
+            transition_duration=500
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig_wf, use_container_width=True)
 
-    # Third Row: Top Routes & Quick Insights
-    c_bottom_left, c_bottom_right = st.columns([1, 1])
+    # Narrative Insight Section
+    st.subheader("Data Highlights & Actionable Insights")
+    top_route = route_df.groupby('Route')['Revenue_AED'].sum().idxmax()
+    top_route_rev = route_df.groupby('Route')['Revenue_AED'].sum().max()
     
-    with c_bottom_left:
-        st.subheader("Top 10 Routes by Revenue")
-        route_rev = sales_df.groupby('Route')['Gross_Fare_AED'].sum().reset_index()
-        route_rev = route_rev.sort_values(by='Gross_Fare_AED', ascending=True).tail(10)
-        
-        fig = px.bar(
-            route_rev,
-            x='Gross_Fare_AED',
-            y='Route',
-            orientation='h',
-            color='Gross_Fare_AED',
-            color_continuous_scale='Blues',
-            labels={'Gross_Fare_AED': 'Revenue (AED)', 'Route': 'Route'}
-        )
-        fig.update_layout(
-            template='plotly_dark',
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
-            yaxis=dict(showgrid=False),
-            coloraxis_showscale=False,
-            margin=dict(l=0, r=0, t=20, b=0)
-        )
-        st.plotly_chart(fig, use_container_width=True)
-        
-    with c_bottom_right:
-        st.subheader("Data Highlights & Actionable Insights")
-        
-        # Calculate some data-driven findings
-        top_route = sales_df.groupby('Route')['Gross_Fare_AED'].sum().idxmax()
-        top_route_revenue = sales_df.groupby('Route')['Gross_Fare_AED'].sum().max()
-        top_agent = sales_df.groupby('Agent_Name')['Gross_Fare_AED'].sum().idxmax()
-        top_agent_revenue = sales_df.groupby('Agent_Name')['Gross_Fare_AED'].sum().max()
-        
-        st.markdown(f"""
-        <div class='info-box'>
-            <h4 style='color: #00b0ff; margin-top:0;'>💡 Network Sales Summary</h4>
-            <ul>
-                <li><b>Network Star Route:</b> The best-performing route is <b>{top_route}</b> generating a gross revenue of <b>AED {top_route_revenue:,.2f}</b> in the selected period.</li>
-                <li><b>Leading Agent Channel:</b> <b>{top_agent}</b> is the largest sales contributor, attribution totals <b>AED {top_agent_revenue:,.2f}</b>.</li>
-                <li><b>Billing Audit Health:</b> Acceptance rate stands at <span class='badge badge-success'>{billing_efficiency:.1f}%</span>, reflecting strong efficiency, but audit shows <span class='badge badge-danger'>{rejection_pct:.1f}%</span> in rejected amounts requiring settlement adjustment.</li>
-                <li><b>Operational Capacity:</b> Flown load factor averaged <b>{weighted_load_factor:.2f}%</b>, signaling strong occupancy rates across primary active flight legs.</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Display monthly revenue comparison dataframe
-        monthly_table = monthly_sales[['Period', 'Gross_Fare_AED', 'Net_Fare_AED']].copy()
-        monthly_table['Gross_Fare_AED'] = monthly_table['Gross_Fare_AED'].map(lambda x: f"AED {x:,.2f}")
-        monthly_table['Net_Fare_AED'] = monthly_table['Net_Fare_AED'].map(lambda x: f"AED {x:,.2f}")
-        st.write("Monthly Breakdown Table:")
-        st.dataframe(monthly_table, hide_index=True, use_container_width=True)
+    st.markdown(f"""
+    <div class='info-box'>
+        <h4 style='color: #00b0ff; margin-top:0;'>💡 Network Profitability Summary</h4>
+        <ul>
+            <li><b>Star Route:</b> Route <b>{top_route}</b> is the leading sales driver, generating a gross revenue of <b>AED {top_route_rev:,.2f}</b>.</li>
+            <li><b>Interline Revenue Impact:</b> Out of AED {total_rev/1e6:.2f}M gross ticket bookings, interline inward billing fees paid to partner airlines (<b>AED {inward_billed/1e6:.2f}M</b>) represent the single largest margin drain.</li>
+            <li><b>Billing Auditing Health:</b> Outward interline claims have an acceptance rate of <span class='badge badge-success'>{billing_efficiency:.1f}%</span>. Commercially resolving rejected claims represents a direct recovery opportunity.</li>
+            <li><b>Operational Capacity:</b> Flown load factor stands at <b>{load_factor:.2f}%</b>, reflecting solid seating utilization across the route network.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
-# ----------------- PAGE 2: REVENUE & ROUTES -----------------
-elif page == "✈️ Revenue & Routes":
-    st.title("Revenue & Route Analysis")
-    st.markdown("Detailed breakdown of route-specific revenues, average fares, rankings, and side-by-side route performance comparison.")
+# ----------------- PAGE 2: ROUTE PERFORMANCE & CAPACITY -----------------
+elif page == "✈️ Route Performance & Capacity":
+    st.title("Route Performance & Capacity Analysis")
+    st.markdown("Detailed view of route profitability ledgers, capacity utilizations, and route comparisons.")
     
-    tab1, tab2 = st.tabs(["Route Performance Explorer", "Route Profitability Comparison"])
+    tab1, tab2, tab3 = st.tabs(["Route Performance Explorer", "Capacity & Operational Trends", "Route Profitability Comparison"])
     
     with tab1:
         st.subheader("Route Financial Ledger & Profitability Rankings")
         
-        # Visualizing rankings over time
+        # Monthly Revenue Rank Trend for Top 5 routes
         route_monthly = route_df.groupby(['Route', 'year', 'month_name'])['Revenue_AED'].sum().reset_index()
         route_monthly['month_num'] = route_monthly['month_name'].map(lambda m: month_order.index(m) if m in month_order else 0)
         route_monthly = route_monthly.sort_values(by=['year', 'month_num', 'Revenue_AED'], ascending=[True, True, False])
         route_monthly['Rank'] = route_monthly.groupby(['year', 'month_num'])['Revenue_AED'].rank(ascending=False, method='first')
         
-        # Display ranking movement for top 5 routes
         top_routes = route_df.groupby('Route')['Revenue_AED'].sum().nlargest(5).index.tolist()
         rank_trend_df = route_monthly[route_monthly['Route'].isin(top_routes)].copy()
         rank_trend_df['Period'] = rank_trend_df['month_name'] + " " + rank_trend_df['year'].astype(str)
         
-        fig = px.line(
+        fig_rank = px.line(
             rank_trend_df,
             x='Period',
             y='Rank',
             color='Route',
             markers=True,
-            line_shape='linear',
             title='Monthly Revenue Ranking Trend (Top 5 Routes)',
             color_discrete_sequence=px.colors.qualitative.Plotly
         )
-        fig.update_layout(
+        fig_rank.update_layout(
             template='plotly_dark',
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
-            yaxis=dict(autorange='reverse', tickmode='linear', dtick=1, title="Revenue Rank"),
-            margin=dict(l=0, r=0, t=40, b=0)
+            yaxis=dict(autorange='reversed', tickmode='linear', dtick=1, title="Revenue Rank"),
+            margin=dict(l=20, r=20, t=50, b=20)
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig_rank, use_container_width=True)
         
-        # Ledger table
+        # Route ledger
         st.subheader("Detailed Route Profitability Ledger")
         display_route_df = route_df.groupby('Route').agg({
             'Total_Tickets_Sold': 'sum',
             'Revenue_AED': 'sum',
             'Net_Revenue_AED': 'sum',
-            'Total_Commission_AED': 'sum',
-            'Total_Discount_AED': 'sum',
-            'Total_Tax_AED': 'sum',
             'Passenger_Count': 'sum',
             'Total_Flights': 'sum',
             'Total_Seats_Available': 'sum'
         }).reset_index()
         
-        # Derived calculations
         display_route_df['Avg_Fare_AED'] = (display_route_df['Revenue_AED'] / display_route_df['Total_Tickets_Sold']).round(2)
         display_route_df['Load_Factor_Pct'] = ((display_route_df['Passenger_Count'] * 100.0) / display_route_df['Total_Seats_Available']).round(2)
         display_route_df = display_route_df.sort_values(by='Revenue_AED', ascending=False)
         
-        # Styling dataframe
         styled_df = display_route_df.copy()
         styled_df['Revenue_AED'] = styled_df['Revenue_AED'].map(lambda x: f"AED {x:,.2f}")
         styled_df['Net_Revenue_AED'] = styled_df['Net_Revenue_AED'].map(lambda x: f"AED {x:,.2f}")
@@ -555,11 +584,70 @@ elif page == "✈️ Revenue & Routes":
         )
 
     with tab2:
-        st.subheader("Side-by-Side Route Comparison")
+        st.subheader("Capacity & Seating Efficiencies")
         
+        c_left, c_right = st.columns(2)
+        with c_left:
+            st.subheader("Traffic Profiling: Weekend vs Weekday")
+            weekend_df = uplift_df.groupby('is_weekend').agg({
+                'Passenger_Count': 'sum',
+                'Total_Seats': 'sum'
+            }).reset_index()
+            weekend_df['Load_Factor_Pct'] = (weekend_df['Passenger_Count'] * 100.0) / weekend_df['Total_Seats']
+            weekend_df['Day_Type'] = weekend_df['is_weekend'].map({True: 'Weekend Flights', False: 'Weekday Flights'})
+            
+            fig_day = px.bar(
+                weekend_df,
+                x='Day_Type',
+                y='Load_Factor_Pct',
+                color='Day_Type',
+                text=weekend_df['Load_Factor_Pct'].map(lambda x: f"{x:.2f}%"),
+                color_discrete_map={'Weekend Flights': '#ffeb3b', 'Weekday Flights': '#00b0ff'}
+            )
+            fig_day.update_layout(
+                template='plotly_dark',
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                yaxis=dict(title='Load Factor (%)', range=[0, 100], gridcolor='rgba(255,255,255,0.05)'),
+                xaxis=dict(title=''),
+                showlegend=False,
+                margin=dict(l=20, r=20, t=30, b=20)
+            )
+            st.plotly_chart(fig_day, use_container_width=True)
+            
+        with c_right:
+            st.subheader("Capacity Scatter Profile")
+            route_cap = uplift_df.groupby('Route').agg({
+                'Total_Seats': 'sum',
+                'Passenger_Count': 'sum',
+                'Flight_no': 'count'
+            }).reset_index()
+            route_cap['Load_Factor'] = (route_cap['Passenger_Count'] * 100.0) / route_cap['Total_Seats']
+            
+            fig_scat = px.scatter(
+                route_cap,
+                x='Total_Seats',
+                y='Passenger_Count',
+                size='Flight_no',
+                color='Load_Factor',
+                hover_name='Route',
+                color_continuous_scale='Viridis',
+                labels={'Total_Seats': 'Total Seats Offered', 'Passenger_Count': 'Total Flown Passengers', 'Load_Factor': 'Avg Load Factor (%)'}
+            )
+            fig_scat.update_layout(
+                template='plotly_dark',
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                xaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
+                margin=dict(l=20, r=20, t=30, b=20)
+            )
+            st.plotly_chart(fig_scat, use_container_width=True)
+
+    with tab3:
+        st.subheader("Side-by-Side Route Comparison")
         c1, c2 = st.columns(2)
         all_routes = sorted(route_df['Route'].unique())
-        
         with c1:
             route_a = st.selectbox("Select Route A", all_routes, index=0)
         with c2:
@@ -568,11 +656,9 @@ elif page == "✈️ Revenue & Routes":
         if route_a == route_b:
             st.warning("Please select two different routes for comparison.")
         else:
-            # Gather statistics
             stats_a = display_route_df[display_route_df['Route'] == route_a].iloc[0]
             stats_b = display_route_df[display_route_df['Route'] == route_b].iloc[0]
             
-            comp_data = []
             metrics_list = [
                 ('Gross Revenue', stats_a['Revenue_AED'], stats_b['Revenue_AED'], 'currency'),
                 ('Net Revenue', stats_a['Net_Revenue_AED'], stats_b['Net_Revenue_AED'], 'currency'),
@@ -584,7 +670,6 @@ elif page == "✈️ Revenue & Routes":
             ]
             
             col_a, col_metric, col_b = st.columns([2, 2, 2])
-            
             with col_metric:
                 st.markdown("<div style='text-align: center; font-weight: bold; margin-bottom:10px;'>METRIC</div>", unsafe_allow_html=True)
                 for label, _, _, _ in metrics_list:
@@ -602,7 +687,6 @@ elif page == "✈️ Revenue & Routes":
                         disp = f"{val_a:.2f}%"
                     else:
                         disp = f"{val_a:,.0f}"
-                        
                     st.markdown(f"<div style='text-align: center; padding: 10px; color: {color}; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 600;'>{disp}</div>", unsafe_allow_html=True)
                     
             with col_b:
@@ -617,454 +701,380 @@ elif page == "✈️ Revenue & Routes":
                         disp = f"{val_b:.2f}%"
                     else:
                         disp = f"{val_b:,.0f}"
-                        
                     st.markdown(f"<div style='text-align: center; padding: 10px; color: {color}; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 600;'>{disp}</div>", unsafe_allow_html=True)
 
-# ----------------- PAGE 3: OCCUPANCY & OPERATIONS -----------------
-elif page == "📈 Occupancy & Operations":
-    st.title("Occupancy & Operational Trends")
-    st.markdown("Tracking flight load factors, flown capacity, weekend vs weekday traffic profiles, and scheduling efficiencies.")
+# ----------------- PAGE 3: INWARD BILLING AUDIT -----------------
+elif page == "🔍 Inward Billing Audit":
+    st.title("Inward Billing & Rejection Audit")
+    st.markdown("Reconciling passenger billing claims, carrier rejections, and direct interline partner settlement margins.")
     
-    # Visual 1: Average Load Factor Trend
-    st.subheader("Monthly Load Factor % Trend")
-    monthly_occ = uplift_df.groupby(['year', 'month_name']).agg({
-        'Passenger_Count': 'sum',
-        'Total_Seats': 'sum'
-    }).reset_index()
-    monthly_occ['month_num'] = monthly_occ['month_name'].map(lambda m: month_order.index(m) if m in month_order else 0)
-    monthly_occ = monthly_occ.sort_values(by=['year', 'month_num'])
-    monthly_occ['Period'] = monthly_occ['month_name'] + " " + monthly_occ['year'].astype(str)
-    monthly_occ['Avg_Load_Factor'] = (monthly_occ['Passenger_Count'] * 100.0) / monthly_occ['Total_Seats']
+    tab1, tab2 = st.tabs(["Outward Claims & Rejections", "Partner Settlement (Sales vs. Billed)"])
     
-    fig = px.line(
-        monthly_occ,
-        x='Period',
-        y='Avg_Load_Factor',
-        markers=True,
-        line_shape='spline',
-        labels={'Avg_Load_Factor': 'Average Load Factor (%)'},
-        color_discrete_sequence=['#2a9d8f']
-    )
-    fig.update_layout(
-        template='plotly_dark',
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        xaxis=dict(showgrid=False),
-        yaxis=dict(gridcolor='rgba(255,255,255,0.05)', range=[30, 100]),
-        margin=dict(l=0, r=0, t=20, b=0)
-    )
-    st.plotly_chart(fig, use_container_width=True)
-    
-    # Visual 2: Weekend vs Weekday analysis
-    c_left, c_right = st.columns(2)
-    
-    with c_left:
-        st.subheader("Traffic Segment: Weekend vs Weekday")
-        # Group by weekend/weekday and compute metrics
-        weekend_df = uplift_df.groupby('is_weekend').agg({
-            'Passenger_Count': 'sum',
-            'Total_Seats': 'sum',
-            'Flight_no': 'count'
-        }).reset_index()
-        weekend_df['Load_Factor_Pct'] = (weekend_df['Passenger_Count'] * 100.0) / weekend_df['Total_Seats']
-        weekend_df['Day_Type'] = weekend_df['is_weekend'].map({True: 'Weekend Flights', False: 'Weekday Flights'})
+    with tab1:
+        total_billed = billing_df['Billed_Amount'].sum()
+        total_accepted = billing_df['Accepted_Amount'].sum()
+        total_rejected = billing_df['Rejected_Amount'].sum()
+        settlement_gap = total_billed - total_accepted
+        billing_eff = (total_accepted * 100.0) / total_billed if total_billed > 0 else 0
+        rej_rate = (total_rejected * 100.0) / total_billed if total_billed > 0 else 0
         
-        fig = px.bar(
-            weekend_df,
-            x='Day_Type',
-            y='Load_Factor_Pct',
-            color='Day_Type',
-            text=weekend_df['Load_Factor_Pct'].map(lambda x: f"{x:.2f}%"),
-            color_discrete_map={'Weekend Flights': '#ffeb3b', 'Weekday Flights': '#00b0ff'}
-        )
-        fig.update_layout(
-            template='plotly_dark',
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            yaxis=dict(title='Load Factor (%)', range=[0, 100], gridcolor='rgba(255,255,255,0.05)'),
-            xaxis=dict(showgrid=False, title=''),
-            showlegend=False,
-            margin=dict(l=0, r=0, t=20, b=0)
-        )
-        st.plotly_chart(fig, use_container_width=True)
-        
-    with c_right:
-        st.subheader("Capacity Utilization Matrix")
-        # Scatter plot of Available Seats vs Passengers Flown by Route
-        route_cap = uplift_df.groupby('Route').agg({
-            'Total_Seats': 'sum',
-            'Passenger_Count': 'sum',
-            'Flight_no': 'count'
-        }).reset_index()
-        route_cap['Load_Factor'] = (route_cap['Passenger_Count'] * 100.0) / route_cap['Total_Seats']
-        
-        fig = px.scatter(
-            route_cap,
-            x='Total_Seats',
-            y='Passenger_Count',
-            size='Flight_no',
-            color='Load_Factor',
-            hover_name='Route',
-            color_continuous_scale='Viridis',
-            labels={'Total_Seats': 'Total Seats Offered', 'Passenger_Count': 'Total Flown Passengers', 'Load_Factor': 'Avg Load Factor (%)'}
-        )
-        fig.update_layout(
-            template='plotly_dark',
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
-            margin=dict(l=0, r=0, t=20, b=0)
-        )
-        st.plotly_chart(fig, use_container_width=True)
-
-# ----------------- PAGE 4: AGENT PERFORMANCE -----------------
-elif page == "👥 Agent Performance":
-    st.title("Agent Sales Performance")
-    st.markdown("Attribution of revenue and ticket sales to booking channels, agents, and commissions structure.")
-    
-    c_top_1, c_top_2 = st.columns([2, 1])
-    
-    with c_top_1:
-        st.subheader("Agent Revenue Leaderboard")
-        agent_rev = sales_df.groupby('Agent_Name').agg({
-            'Gross_Fare_AED': 'sum',
-            'Net_Fare_AED': 'sum',
-            'Total_Tickets_Sold': 'sum',
-            'Commission_Amount_AED': 'sum'
-        }).reset_index().sort_values(by='Gross_Fare_AED', ascending=False)
-        
-        fig = px.bar(
-            agent_rev.head(10),
-            x='Gross_Fare_AED',
-            y='Agent_Name',
-            orientation='h',
-            title='Top 10 Agents by Gross Sales (AED)',
-            color='Gross_Fare_AED',
-            color_continuous_scale='Tealgrn'
-        )
-        fig.update_layout(
-            template='plotly_dark',
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
-            coloraxis_showscale=False,
-            margin=dict(l=0, r=0, t=30, b=0)
-        )
-        st.plotly_chart(fig, use_container_width=True)
-        
-    with c_top_2:
-        st.subheader("Channel Sales Split")
-        channel_rev = sales_df.groupby('Agent_Location_Type')['Gross_Fare_AED'].sum().reset_index()
-        channel_rev['Channel'] = channel_rev['Agent_Location_Type'].map({'GSA': 'General Sales Agent (GSA)', 'BSP': 'Billing & Settlement Plan (BSP)'})
-        
-        fig = px.pie(
-            channel_rev,
-            values='Gross_Fare_AED',
-            names='Channel',
-            hole=0.4,
-            color_discrete_sequence=['#2a9d8f', '#e9c46a']
-        )
-        fig.update_layout(
-            template='plotly_dark',
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            margin=dict(l=0, r=0, t=30, b=0),
-            legend=dict(orientation="h", y=-0.1)
-        )
-        st.plotly_chart(fig, use_container_width=True)
-        
-    st.subheader("Commission & Discount Distribution")
-    # Comm / Discount rates
-    agent_rev['Commission_Rate_Pct'] = (agent_rev['Commission_Amount_AED'] * 100.0) / agent_rev['Gross_Fare_AED']
-    
-    fig = px.scatter(
-        agent_rev,
-        x='Gross_Fare_AED',
-        y='Commission_Amount_AED',
-        size='Total_Tickets_Sold',
-        color='Commission_Rate_Pct',
-        hover_name='Agent_Name',
-        color_continuous_scale='Plasma',
-        labels={'Gross_Fare_AED': 'Gross Sales (AED)', 'Commission_Amount_AED': 'Commission Paid (AED)', 'Commission_Rate_Pct': 'Avg Comm Rate (%)'}
-    )
-    fig.update_layout(
-        template='plotly_dark',
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        xaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
-        yaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
-        margin=dict(l=0, r=0, t=20, b=0)
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-# ----------------- PAGE 5: GEOGRAPHIC SEGMENTATION -----------------
-elif page == "🌍 Geographic Segmentation":
-    st.title("Geographic Network Segmentation")
-    st.markdown("Drill down into Region, Country, City, and Airport hierarchies to see where revenue is generated and passengers fly.")
-    
-    # Create the hierarchical data grouping
-    geo_df = sales_df.copy()
-    
-    st.subheader("Interactive Revenue Tree Map (Region > Country > City)")
-    # Group by hierarchy
-    tree_df = geo_df.groupby(['Foreign_Region', 'Foreign_Country', 'Foreign_City', 'Foreign_Airport_Code']).agg({
-        'Gross_Fare_AED': 'sum',
-        'Total_Tickets_Sold': 'sum'
-    }).reset_index()
-    
-    fig = px.treemap(
-        tree_df,
-        path=['Foreign_Region', 'Foreign_Country', 'Foreign_City', 'Foreign_Airport_Code'],
-        values='Gross_Fare_AED',
-        color='Gross_Fare_AED',
-        color_continuous_scale='Blues',
-        labels={'Gross_Fare_AED': 'Revenue (AED)'}
-    )
-    fig.update_layout(
-        template='plotly_dark',
-        margin=dict(l=0, r=0, t=30, b=0),
-        paper_bgcolor='rgba(0,0,0,0)'
-    )
-    st.plotly_chart(fig, use_container_width=True)
-    
-    # Route Network Map visualization using coordinates
-    st.subheader("Star Air Global Hub-and-Spoke Network Map")
-    
-    # Aggregate traffic for map lines
-    network_traffic = uplift_df.groupby(['Origin_Airport_Code', 'Destination_Airport_Code', 'Foreign_Airport_Code', 'Foreign_City', 'Foreign_Country']).agg({
-        'Passenger_Count': 'sum',
-        'Flight_no': 'count'
-    }).reset_index()
-    
-    # Plotting using Mapbox or Scattergeo
-    fig = go.Figure()
-    
-    # 1. Add Airport Nodes
-    airport_nodes = set(network_traffic['Origin_Airport_Code']).union(set(network_traffic['Destination_Airport_Code']))
-    node_lats = []
-    node_lons = []
-    node_names = []
-    node_sizes = []
-    
-    for apt in airport_nodes:
-        if apt in AIRPORT_COORDS:
-            lat, lon = AIRPORT_COORDS[apt]
-            node_lats.append(lat)
-            node_lons.append(lon)
-            node_names.append(f"{apt} ({AIRPORT_GEOGRAPHY.get(apt, {}).get('City', 'Unknown')})")
+        # Audit highlights cards
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.markdown(
+                f"<div class='card-container'>"
+                f"<div class='metric-header'>Total Billed Claims</div>"
+                f"<div class='metric-value'>AED {total_billed/1e6:.2f}M</div>"
+                f"<div class='metric-delta'>Claimed Amount</div>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+        with col2:
+            st.markdown(
+                f"<div class='card-container'>"
+                f"<div class='metric-header'>Accepted & Settled</div>"
+                f"<div class='metric-value'>AED {total_accepted/1e6:.2f}M</div>"
+                f"<div class='metric-delta'><span class='delta-up'>Eff: {billing_eff:.2f}%</span></div>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+        with col3:
+            st.markdown(
+                f"<div class='card-container'>"
+                f"<div class='metric-header'>Rejected Claims</div>"
+                f"<div class='metric-value'>AED {total_rejected/1e6:.2f}M</div>"
+                f"<div class='metric-delta'><span class='delta-down'>Rej Rate: {rej_rate:.2f}%</span></div>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+        with col4:
+            st.markdown(
+                f"<div class='card-container'>"
+                f"<div class='metric-header'>Outstanding Gap</div>"
+                f"<div class='metric-value'>AED {settlement_gap/1e6:.2f}M</div>"
+                f"<div class='metric-delta'>Outstanding Variance</div>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
             
-            # Size node by its route activity
-            activity = network_traffic[(network_traffic['Origin_Airport_Code'] == apt) | (network_traffic['Destination_Airport_Code'] == apt)]['Passenger_Count'].sum()
-            node_sizes.append(max(6, min(20, int(activity / 1000))))
+        c_left, c_right = st.columns(2)
+        with c_left:
+            st.subheader("Billing Efficiency & Rejection Trends")
+            billing_monthly = billing_df.groupby(['year', 'month_name']).agg({
+                'Billed_Amount': 'sum',
+                'Accepted_Amount': 'sum',
+                'Rejected_Amount': 'sum'
+            }).reset_index()
+            billing_monthly['month_num'] = billing_monthly['month_name'].map(lambda m: month_order.index(m) if m in month_order else 0)
+            billing_monthly = billing_monthly.sort_values(by=['year', 'month_num'])
+            billing_monthly['Period'] = billing_monthly['month_name'] + " " + billing_monthly['year'].astype(str)
+            billing_monthly['Rejection_Rate'] = (billing_monthly['Rejected_Amount'] * 100.0) / billing_monthly['Billed_Amount']
+            billing_monthly['Efficiency_Rate'] = (billing_monthly['Accepted_Amount'] * 100.0) / billing_monthly['Billed_Amount']
             
-    fig.add_trace(go.Scattergeo(
-        locationmode='ISO-3',
-        lon=node_lons,
-        lat=node_lats,
-        text=node_names,
-        mode='markers+text',
-        textposition='top center',
-        marker=dict(
-            size=node_sizes,
-            color='#00b0ff',
-            line=dict(width=1, color='rgba(255,255,255,0.6)'),
-            opacity=0.9
-        ),
-        name='Airports'
-    ))
-    
-    # 2. Add Flight Path Lines
-    for idx, row in network_traffic.iterrows():
-        orig = row['Origin_Airport_Code']
-        dest = row['Destination_Airport_Code']
-        passengers = row['Passenger_Count']
-        
-        if orig in AIRPORT_COORDS and dest in AIRPORT_COORDS:
-            lat_o, lon_o = AIRPORT_COORDS[orig]
-            lat_d, lon_d = AIRPORT_COORDS[dest]
-            
-            fig.add_trace(go.Scattergeo(
-                locationmode='ISO-3',
-                lon=[lon_o, lon_d],
-                lat=[lat_o, lat_d],
-                mode='lines',
-                line=dict(width=max(1, min(6, int(passengers / 2000))), color='rgba(0, 176, 255, 0.4)'),
-                hoverinfo='none',
-                showlegend=False
+            fig_trend = go.Figure()
+            fig_trend.add_trace(go.Scatter(
+                x=billing_monthly['Period'],
+                y=billing_monthly['Efficiency_Rate'],
+                mode='lines+markers',
+                name='Billing Efficiency Pct',
+                line=dict(color='#2a9d8f', width=3),
+                marker=dict(size=8)
             ))
+            fig_trend.add_trace(go.Scatter(
+                x=billing_monthly['Period'],
+                y=billing_monthly['Rejection_Rate'],
+                mode='lines+markers',
+                name='Rejection Rate Pct',
+                line=dict(color='#ff1744', width=3),
+                marker=dict(size=8)
+            ))
+            fig_trend.update_layout(
+                template='plotly_dark',
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                xaxis=dict(showgrid=False),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title='Percentage (%)', range=[0, 100]),
+                margin=dict(l=20, r=20, t=30, b=20),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(fig_trend, use_container_width=True)
             
-    fig.update_layout(
-        template='plotly_dark',
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        geo=dict(
-            showland=True,
-            landcolor='rgba(25, 35, 50, 1)',
-            subunitcolor='rgba(255,255,255,0.1)',
-            countrycolor='rgba(255,255,255,0.15)',
-            showocean=True,
-            oceancolor='rgba(10, 15, 25, 1)',
-            projection_type='orthographic', # Cool globe view! Or change to 'equirectangular'
-            showcountries=True,
-            showlakes=True,
-            lakecolor='rgba(10, 15, 25, 1)'
-        ),
-        margin=dict(l=0, r=0, t=10, b=10)
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
+        with c_right:
+            st.subheader("Billed Amount vs. Accepted vs. Rejected (AED)")
+            fig_bars = go.Figure()
+            fig_bars.add_trace(go.Bar(
+                x=billing_monthly['Period'],
+                y=billing_monthly['Billed_Amount'],
+                name='Billed Amount',
+                marker_color='#00b0ff'
+            ))
+            fig_bars.add_trace(go.Bar(
+                x=billing_monthly['Period'],
+                y=billing_monthly['Accepted_Amount'],
+                name='Accepted Amount',
+                marker_color='#2a9d8f'
+            ))
+            fig_bars.add_trace(go.Bar(
+                x=billing_monthly['Period'],
+                y=billing_monthly['Rejected_Amount'],
+                name='Rejected Amount',
+                marker_color='#ff1744'
+            ))
+            fig_bars.update_layout(
+                template='plotly_dark',
+                barmode='group',
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                xaxis=dict(showgrid=False),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title='AED'),
+                margin=dict(l=20, r=20, t=30, b=20),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(fig_bars, use_container_width=True)
 
-# ----------------- PAGE 6: SETTLEMENT & BILLING AUDIT -----------------
-elif page == "🔍 Settlement & Billing Audit":
-    st.title("Interline Billing & Settlement Audit")
-    st.markdown("Reconciling outward passenger billing, rejected claims, billing efficiencies, and settlement currency differences.")
-    
-    # Let's compute settlement metrics from billing_df
-    # In billing_df, we have columns:
-    # 'Billed_Amount', 'Commission_Amount', 'Billed_Discount', 'Accepted_Amount', 'Accepted_Commission', 'Accepted_Discount', 'Rejected_Amount', 'Rejected_Commission', 'Rejected_Discount', 'Rejection_Percentage', 'Billing_Efficiency_Pct'
-    
-    total_billed = billing_df['Billed_Amount'].sum()
-    total_accepted = billing_df['Accepted_Amount'].sum()
-    total_rejected = billing_df['Rejected_Amount'].sum()
-    settlement_gap = total_billed - total_accepted
-    billing_eff = (total_accepted * 100.0) / total_billed if total_billed > 0 else 0
-    rej_rate = (total_rejected * 100.0) / total_billed if total_billed > 0 else 0
-    
-    # Audit highlights cards
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown(
-            f"<div class='card-container'>"
-            f"<div class='metric-header'>Total Billed Claims</div>"
-            f"<div class='metric-value'>AED {total_billed/1e6:.2f}M</div>"
-            f"<div class='metric-delta'>Claimed Amount</div>"
-            f"</div>",
-            unsafe_allow_html=True
-        )
-    with col2:
-        st.markdown(
-            f"<div class='card-container'>"
-            f"<div class='metric-header'>Accepted & Settled</div>"
-            f"<div class='metric-value'>AED {total_accepted/1e6:.2f}M</div>"
-            f"<div class='metric-delta'><span class='delta-up'>Eff: {billing_eff:.2f}%</span></div>"
-            f"</div>",
-            unsafe_allow_html=True
-        )
-    with col3:
-        st.markdown(
-            f"<div class='card-container'>"
-            f"<div class='metric-header'>Rejected Claims</div>"
-            f"<div class='metric-value'>AED {total_rejected/1e6:.2f}M</div>"
-            f"<div class='metric-delta'><span class='delta-down'>Rej Rate: {rej_rate:.2f}%</span></div>"
-            f"</div>",
-            unsafe_allow_html=True
-        )
-    with col4:
-        st.markdown(
-            f"<div class='card-container'>"
-            f"<div class='metric-header'>Settlement Gap</div>"
-            f"<div class='metric-value'>AED {settlement_gap/1e6:.2f}M</div>"
-            f"<div class='metric-delta'>Outstanding Variance</div>"
-            f"</div>",
-            unsafe_allow_html=True
-        )
-        
-    c_left, c_right = st.columns(2)
-    
-    with c_left:
-        st.subheader("Billing Efficiency & Rejection Trends")
-        billing_monthly = billing_df.groupby(['year', 'month_name']).agg({
+        # Detailed Audit Ledger
+        st.subheader("Detailed Billing Audit Ledger")
+        audit_table = billing_df.groupby(['Billed_Carrier_Name', 'Billed_Currency']).agg({
+            'Ticket_Count': 'sum',
             'Billed_Amount': 'sum',
             'Accepted_Amount': 'sum',
             'Rejected_Amount': 'sum'
         }).reset_index()
-        billing_monthly['month_num'] = billing_monthly['month_name'].map(lambda m: month_order.index(m) if m in month_order else 0)
-        billing_monthly = billing_monthly.sort_values(by=['year', 'month_num'])
-        billing_monthly['Period'] = billing_monthly['month_name'] + " " + billing_monthly['year'].astype(str)
-        billing_monthly['Rejection_Rate'] = (billing_monthly['Rejected_Amount'] * 100.0) / billing_monthly['Billed_Amount']
-        billing_monthly['Efficiency_Rate'] = (billing_monthly['Accepted_Amount'] * 100.0) / billing_monthly['Billed_Amount']
         
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=billing_monthly['Period'],
-            y=billing_monthly['Efficiency_Rate'],
-            mode='lines+markers',
-            name='Billing Efficiency Pct',
-            line=dict(color='#2a9d8f', width=3),
-            marker=dict(size=8)
-        ))
-        fig.add_trace(go.Scatter(
-            x=billing_monthly['Period'],
-            y=billing_monthly['Rejection_Rate'],
-            mode='lines+markers',
-            name='Rejection Rate Pct',
-            line=dict(color='#ff1744', width=3),
-            marker=dict(size=8)
-        ))
-        fig.update_layout(
-            template='plotly_dark',
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(showgrid=False),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title='Percentage (%)', range=[0, 100]),
-            margin=dict(l=0, r=0, t=20, b=0),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-        )
-        st.plotly_chart(fig, use_container_width=True)
+        audit_table['Settlement_Gap'] = audit_table['Billed_Amount'] - audit_table['Accepted_Amount']
+        audit_table['Efficiency_Rate'] = ((audit_table['Accepted_Amount'] * 100.0) / audit_table['Billed_Amount']).round(2)
+        audit_table = audit_table.sort_values(by='Billed_Amount', ascending=False)
         
-    with c_right:
-        st.subheader("Billed Amount vs Accepted vs Rejected (AED)")
-        fig = go.Figure()
-        fig.add_trace(go.Bar(
-            x=billing_monthly['Period'],
-            y=billing_monthly['Billed_Amount'],
-            name='Billed Amount',
-            marker_color='#00b0ff'
-        ))
-        fig.add_trace(go.Bar(
-            x=billing_monthly['Period'],
-            y=billing_monthly['Accepted_Amount'],
-            name='Accepted Amount',
-            marker_color='#2a9d8f'
-        ))
-        fig.add_trace(go.Bar(
-            x=billing_monthly['Period'],
-            y=billing_monthly['Rejected_Amount'],
-            name='Rejected Amount',
-            marker_color='#ff1744'
-        ))
-        fig.update_layout(
-            template='plotly_dark',
-            barmode='group',
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(showgrid=False),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title='AED'),
-            margin=dict(l=0, r=0, t=20, b=0),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-        )
-        st.plotly_chart(fig, use_container_width=True)
+        styled_audit = audit_table.copy()
+        styled_audit['Billed_Amount'] = styled_audit['Billed_Amount'].map(lambda x: f"AED {x:,.2f}")
+        styled_audit['Accepted_Amount'] = styled_audit['Accepted_Amount'].map(lambda x: f"AED {x:,.2f}")
+        styled_audit['Rejected_Amount'] = styled_audit['Rejected_Amount'].map(lambda x: f"AED {x:,.2f}")
+        styled_audit['Settlement_Gap'] = styled_audit['Settlement_Gap'].map(lambda x: f"AED {x:,.2f}")
+        styled_audit['Efficiency_Rate'] = styled_audit['Efficiency_Rate'].map(lambda x: f"{x:.2f}%")
+        styled_audit['Ticket_Count'] = styled_audit['Ticket_Count'].map('{:,.0f}'.format)
+        
+        st.dataframe(styled_audit, hide_index=True, use_container_width=True)
 
-    # Detailed Audit Ledger
-    st.subheader("Detailed Billing Audit Ledger")
-    audit_table = billing_df.groupby(['Billed_Carrier_Name', 'Billed_Currency']).agg({
-        'Ticket_Count': 'sum',
-        'Billed_Amount': 'sum',
-        'Accepted_Amount': 'sum',
-        'Rejected_Amount': 'sum'
-    }).reset_index()
-    
-    audit_table['Settlement_Gap'] = audit_table['Billed_Amount'] - audit_table['Accepted_Amount']
-    audit_table['Efficiency_Rate'] = ((audit_table['Accepted_Amount'] * 100.0) / audit_table['Billed_Amount']).round(2)
-    
-    # Formatting
-    styled_audit = audit_table.copy()
-    styled_audit['Billed_Amount'] = styled_audit['Billed_Amount'].map(lambda x: f"AED {x:,.2f}")
-    styled_audit['Accepted_Amount'] = styled_audit['Accepted_Amount'].map(lambda x: f"AED {x:,.2f}")
-    styled_audit['Rejected_Amount'] = styled_audit['Rejected_Amount'].map(lambda x: f"AED {x:,.2f}")
-    styled_audit['Settlement_Gap'] = styled_audit['Settlement_Gap'].map(lambda x: f"AED {x:,.2f}")
-    styled_audit['Efficiency_Rate'] = styled_audit['Efficiency_Rate'].map(lambda x: f"{x:.2f}%")
-    styled_audit['Ticket_Count'] = styled_audit['Ticket_Count'].map('{:,.0f}'.format)
-    
-    st.dataframe(styled_audit, hide_index=True, use_container_width=True)
+        # Inward Billing Story commentary
+        st.markdown(f"""
+        <div class='info-box'>
+            <h4 style='color: #00b0ff; margin-top:0;'>🔍 Inward Billing Leakage Findings</h4>
+            <ul>
+                <li><b>Billing Gap Drivers:</b> Out of <b>AED {total_billed/1e6:.2f}M</b> total outward interline bills, partner airlines rejected <b>AED {total_rejected/1e6:.2f}M</b> (<b>{rej_rate:.1f}%</b> of claims).</li>
+                <li><b>Carrier Behavior:</b> The detailed carrier ledger exposes that claims routed under specific currencies or carriers undergo different audit scrutiny. Specific carriers with efficiency rates under 85% must be targeted for claims audits.</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with tab2:
+        st.subheader("Interline Partner Billing vs. Sales Reconciliation")
+        st.markdown(
+            "When Star Air books a ticket (Sales) but the passenger is flown by a partner airline, the partner carrier "
+            "bills Star Air (Inward Billing) to settle. Star Air audits these claims, accepting some amount to pay (Settled Value) "
+            "and rejecting any incorrect billing (Rejections)."
+        )
+        
+        if len(settlement_df) == 0:
+            st.warning("No settlement reconciliation records match the active global filters.")
+        else:
+            total_sales_val = settlement_df['Sales_Value'].sum()
+            total_billed_val = settlement_df['Billing_Value'].sum()
+            total_settled_val = settlement_df['Settlement_Value'].sum()
+            total_rejected_val = settlement_df['Rejected_Value'].sum()
+            net_retention = total_sales_val - total_settled_val
+            retention_margin_pct = (net_retention * 100.0) / total_sales_val if total_sales_val > 0 else 0
+            acceptance_rate = (total_settled_val * 100.0) / total_billed_val if total_billed_val > 0 else 0
+            rejection_rate = (total_rejected_val * 100.0) / total_billed_val if total_billed_val > 0 else 0
+            
+            # KPI Cards
+            c1, c2, c3, c4 = st.columns(4)
+            with c1:
+                st.markdown(
+                    f"<div class='card-container'>"
+                    f"<div class='metric-header'>Star Air Sale Value</div>"
+                    f"<div class='metric-value'>${total_sales_val/1e6:.2f}M</div>"
+                    f"<div class='metric-delta'>Original Bookings</div>"
+                    f"</div>",
+                    unsafe_allow_html=True
+                )
+            with c2:
+                st.markdown(
+                    f"<div class='card-container'>"
+                    f"<div class='metric-header'>Partner Billed Value</div>"
+                    f"<div class='metric-value'>${total_billed_val/1e6:.2f}M</div>"
+                    f"<div class='metric-delta'>Inward Claims</div>"
+                    f"</div>",
+                    unsafe_allow_html=True
+                )
+            with c3:
+                st.markdown(
+                    f"<div class='card-container'>"
+                    f"<div class='metric-header'>Accepted to Pay</div>"
+                    f"<div class='metric-value'>${total_settled_val/1e6:.2f}M</div>"
+                    f"<div class='metric-delta'><span class='delta-up'>Acceptance: {acceptance_rate:.2f}%</span></div>"
+                    f"</div>",
+                    unsafe_allow_html=True
+                )
+            with c4:
+                color_class = "delta-up" if net_retention >= 0 else "delta-down"
+                sign = "▲ Surplus" if net_retention >= 0 else "▼ Deficit"
+                val_color = "#a5d6a7" if net_retention >= 0 else "#ff8a80"
+                st.markdown(
+                    f"<div class='card-container'>"
+                    f"<div class='metric-header'>Net Retention Surplus</div>"
+                    f"<div class='metric-value' style='background: linear-gradient(135deg, #ffffff 0%, {val_color} 100%) !important;'>${net_retention/1e6:.2f}M</div>"
+                    f"<div class='metric-delta'><span class='{color_class}'>{sign} ({retention_margin_pct:.2f}%)</span></div>"
+                    f"</div>",
+                    unsafe_allow_html=True
+                )
+                
+            # Monthly comparison plots
+            c_left, c_right = st.columns(2)
+            with c_left:
+                st.subheader("Monthly Sales vs. Billed vs. Accepted Claims (USD)")
+                monthly_settlement = settlement_df.groupby(['year', 'month_name']).agg({
+                    'Sales_Value': 'sum',
+                    'Billing_Value': 'sum',
+                    'Settlement_Value': 'sum',
+                    'Rejected_Value': 'sum'
+                }).reset_index()
+                monthly_settlement['month_num'] = monthly_settlement['month_name'].map(lambda m: month_order.index(m) if m in month_order else 0)
+                monthly_settlement = monthly_settlement.sort_values(by=['year', 'month_num'])
+                monthly_settlement['Period'] = monthly_settlement['month_name'] + " " + monthly_settlement['year'].astype(str)
+                
+                fig_monthly = go.Figure()
+                fig_monthly.add_trace(go.Bar(
+                    x=monthly_settlement['Period'],
+                    y=monthly_settlement['Sales_Value'],
+                    name='Star Air Sale Value',
+                    marker_color='#00b0ff'
+                ))
+                fig_monthly.add_trace(go.Bar(
+                    x=monthly_settlement['Period'],
+                    y=monthly_settlement['Billing_Value'],
+                    name='Partner Billed Value',
+                    marker_color='#ff8a80'
+                ))
+                fig_monthly.add_trace(go.Bar(
+                    x=monthly_settlement['Period'],
+                    y=monthly_settlement['Settlement_Value'],
+                    name='Accepted to Pay',
+                    marker_color='#2a9d8f'
+                ))
+                fig_monthly.update_layout(
+                    template='plotly_dark',
+                    barmode='group',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    xaxis=dict(showgrid=False),
+                    yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title='USD'),
+                    margin=dict(l=20, r=20, t=30, b=20),
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+                )
+                st.plotly_chart(fig_monthly, use_container_width=True)
+                
+            with c_right:
+                st.subheader("Monthly Acceptance & Rejection Rates (%)")
+                monthly_settlement['Acceptance_Rate'] = (monthly_settlement['Settlement_Value'] * 100.0) / monthly_settlement['Billing_Value']
+                monthly_settlement['Rejection_Rate'] = (monthly_settlement['Rejected_Value'] * 100.0) / monthly_settlement['Billing_Value']
+                
+                fig_rates = go.Figure()
+                fig_rates.add_trace(go.Scatter(
+                    x=monthly_settlement['Period'],
+                    y=monthly_settlement['Acceptance_Rate'],
+                    mode='lines+markers',
+                    name='Acceptance Rate (%)',
+                    line=dict(color='#2a9d8f', width=3),
+                    marker=dict(size=8)
+                ))
+                fig_rates.add_trace(go.Scatter(
+                    x=monthly_settlement['Period'],
+                    y=monthly_settlement['Rejection_Rate'],
+                    mode='lines+markers',
+                    name='Rejection Rate (%)',
+                    line=dict(color='#ff1744', width=3),
+                    marker=dict(size=8)
+                ))
+                fig_rates.update_layout(
+                    template='plotly_dark',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    xaxis=dict(showgrid=False),
+                    yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title='Percentage (%)', range=[0, 100]),
+                    margin=dict(l=20, r=20, t=30, b=20),
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+                )
+                st.plotly_chart(fig_rates, use_container_width=True)
+                
+            # Currency ledger
+            st.subheader("Detailed Currency Settlement Ledger")
+            currency_ledger = settlement_df.groupby('Currency').agg({
+                'Sales_Value': 'sum',
+                'Billing_Value': 'sum',
+                'Settlement_Value': 'sum',
+                'Rejected_Value': 'sum'
+            }).reset_index()
+            currency_ledger['Net_Retention'] = currency_ledger['Sales_Value'] - currency_ledger['Settlement_Value']
+            currency_ledger['Acceptance_Rate'] = ((currency_ledger['Settlement_Value'] * 100.0) / currency_ledger['Billing_Value']).round(2)
+            
+            styled_curr = currency_ledger.copy()
+            styled_curr['Sales_Value'] = styled_curr['Sales_Value'].map(lambda x: f"${x:,.2f}")
+            styled_curr['Billing_Value'] = styled_curr['Billing_Value'].map(lambda x: f"${x:,.2f}")
+            styled_curr['Settlement_Value'] = styled_curr['Settlement_Value'].map(lambda x: f"${x:,.2f}")
+            styled_curr['Rejected_Value'] = styled_curr['Rejected_Value'].map(lambda x: f"${x:,.2f}")
+            styled_curr['Net_Retention'] = styled_curr['Net_Retention'].map(lambda x: f"${x:,.2f}")
+            styled_curr['Acceptance_Rate'] = styled_curr['Acceptance_Rate'].map(lambda x: f"{x:.2f}%")
+            
+            st.dataframe(styled_curr, hide_index=True, use_container_width=True)
+            
+            # Route-level comparison ledger
+            st.subheader("Route-level Interline Settlement Deficit Audit (AED)")
+            st.markdown("Reconciling ticket sales with estimated partner billing settlement at the route level to identify leakage sectors.")
+            
+            interline_df = overall_rev_df[overall_rev_df['Inward_Available_Flag'] == 'Yes'].copy()
+            if len(interline_df) == 0:
+                st.warning("No route interline records match the active global filters.")
+            else:
+                route_interline = interline_df.groupby('Route').agg({
+                    'Ticket_Count': 'sum',
+                    'Ticket_Amount_AED': 'sum',
+                    'Inward_Billed_Amount': 'sum'
+                }).reset_index()
+                
+                # Apply the overall historical acceptance rate to estimate settlement
+                hist_acc_rate = total_settled_val / total_billed_val if total_billed_val > 0 else 0.846
+                
+                route_interline['Est_Accepted_Pay'] = route_interline['Inward_Billed_Amount'] * hist_acc_rate
+                route_interline['Est_Rejected_Amount'] = route_interline['Inward_Billed_Amount'] - route_interline['Est_Accepted_Pay']
+                route_interline['Net_Retention_Surplus'] = route_interline['Ticket_Amount_AED'] - route_interline['Est_Accepted_Pay']
+                route_interline['Retention_Margin_Pct'] = (route_interline['Net_Retention_Surplus'] * 100.0) / route_interline['Ticket_Amount_AED']
+                
+                route_interline = route_interline.sort_values(by='Net_Retention_Surplus', ascending=True) # Biggest losses first
+                
+                styled_route_interline = route_interline.copy()
+                styled_route_interline['Ticket_Amount_AED'] = styled_route_interline['Ticket_Amount_AED'].map(lambda x: f"AED {x:,.2f}")
+                styled_route_interline['Inward_Billed_Amount'] = styled_route_interline['Inward_Billed_Amount'].map(lambda x: f"AED {x:,.2f}")
+                styled_route_interline['Est_Accepted_Pay'] = styled_route_interline['Est_Accepted_Pay'].map(lambda x: f"AED {x:,.2f}")
+                styled_route_interline['Est_Rejected_Amount'] = styled_route_interline['Est_Rejected_Amount'].map(lambda x: f"AED {x:,.2f}")
+                styled_route_interline['Net_Retention_Surplus'] = styled_route_interline['Net_Retention_Surplus'].map(lambda x: f"AED {x:,.2f}")
+                styled_route_interline['Retention_Margin_Pct'] = styled_route_interline['Retention_Margin_Pct'].map(lambda x: f"{x:.2f}%")
+                styled_route_interline['Ticket_Count'] = styled_route_interline['Ticket_Count'].map('{:,.0f}'.format)
+                
+                st.dataframe(
+                    styled_route_interline[['Route', 'Ticket_Count', 'Ticket_Amount_AED', 'Inward_Billed_Amount', 'Est_Accepted_Pay', 'Est_Rejected_Amount', 'Net_Retention_Surplus', 'Retention_Margin_Pct']],
+                    hide_index=True,
+                    use_container_width=True
+                )
+            
+            # Narrative insights card
+            st.markdown(f"""
+            <div class='info-box'>
+                <h4 style='color: #00b0ff; margin-top:0;'>💡 Settlement Audit & Pricing Insight</h4>
+                <ul>
+                    <li><b>Pricing Discrepancy & Leakage:</b> Comparing partner billing with Star Air's sales shows that our passenger ticket fares cover partner codeshare costs. The net retention surplus (Sale Value - Accepted Payment) is positive on average, meaning Star Air retains margin.</li>
+                    <li><b>Auditing Efficiency:</b> By rejecting billing discrepancies (average rejection rate: <b>{rejection_rate:.2f}%</b>), Star Air has saved <b>${total_rejected_val/1e6:.2f}M</b> from partner claims.</li>
+                    <li><b>Actionable Remedy:</b> The Commercial team must audit routes with low retention margins (indicated in red/negative surplus) and renegotiate interline codeshare rates or adjust our passenger ticket pricing.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+
