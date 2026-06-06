@@ -283,23 +283,34 @@ def load_overall_revenue():
         'Ticket_Amount_AED', 'Tax_AED', 'Agent_Commission_AED', 'Discount_AED', 
         'Inward_Billed_Amount', 'Inward_Commission_Received', 'Revenue_Per_Ticket_AED'
     ]
+    if 'Ticket_Count' in df.columns:
+        numeric_cols.append('Ticket_Count')
     for c in numeric_cols:
         if c in df.columns:
             df[c] = pd.to_numeric(df[c], errors='coerce').fillna(0.0)
             
-    agg_df = df.groupby(groupby_cols).agg({
+    agg_dict = {
         'Ticket_Amount_AED': 'sum',
         'Tax_AED': 'sum',
         'Agent_Commission_AED': 'sum',
         'Discount_AED': 'sum',
         'Inward_Billed_Amount': 'sum',
         'Inward_Commission_Received': 'sum',
-        'Revenue_Per_Ticket_AED': 'sum',
-        'Ticket_Number': 'count' if 'Ticket_Number' in df.columns else 'size'
-    }).reset_index()
+        'Revenue_Per_Ticket_AED': 'sum'
+    }
+    if 'Ticket_Count' in df.columns:
+        agg_dict['Ticket_Count'] = 'sum'
+    elif 'Ticket_Number' in df.columns:
+        agg_dict['Ticket_Number'] = 'count'
+    else:
+        df['Ticket_Count'] = 1
+        agg_dict['Ticket_Count'] = 'sum'
+        
+    agg_df = df.groupby(groupby_cols).agg(agg_dict).reset_index()
     
-    agg_df.rename(columns={'Ticket_Number': 'Ticket_Count'}, inplace=True)
-    
+    if 'Ticket_Number' in agg_df.columns:
+        agg_df.rename(columns={'Ticket_Number': 'Ticket_Count'}, inplace=True)
+        
     # Convert dates
     agg_df['Revenue_Date'] = pd.to_datetime(agg_df['Revenue_Date'])
     

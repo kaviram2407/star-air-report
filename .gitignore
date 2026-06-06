@@ -1,0 +1,25 @@
+# Ignore compiled python files
+__pycache__/
+*.pyc
+
+# Ignore OS files
+.DS_Store
+.ipynb_checkpoints/
+
+# Ignore large unused datasets
+gold_sales_performance_in1725.csv
+
+# Ignore extraction and analysis scratch files
+inspect_data.py
+inspect_ddl.py
+inspect_notebooks.py
+inspect_specific_cells.py
+read_pdf.py
+pdf_text.txt
+extract_all.py
+extract_tables.py
+check_env.py
+check_libraries.py
+dim_test.ipynb
+Simulation_PDM_Team3.pdf
+NB_Gold_views_IN1725.ipynb
