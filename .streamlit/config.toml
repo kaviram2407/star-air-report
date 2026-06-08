@@ -1,0 +1,23 @@
+[theme]
+# Primary theme color (accents, buttons, select highlights)
+primaryColor = "#00b0ff"
+
+# Main background color
+backgroundColor = "#0e1117"
+
+# Sidebar and secondary background color
+secondaryBackgroundColor = "#080c11"
+
+# Main text color
+textColor = "#ffffff"
+
+# Custom font
+font = "sans serif"
+
+[server]
+# Optimal settings for cloud hosting/containers
+headless = true
+
+[client]
+# Prevents showing python tracebacks directly to end-users on runtime errors
+showErrorDetails = false

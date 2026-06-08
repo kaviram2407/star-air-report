@@ -23,3 +23,7 @@ check_libraries.py
 dim_test.ipynb
 Simulation_PDM_Team3.pdf
 NB_Gold_views_IN1725.ipynb
+
+# Ignore local credentials/secrets files
+.env
+.streamlit/secrets.toml
