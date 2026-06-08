@@ -319,10 +319,6 @@ footer {{
     display: none !important;
 }}
 
-/* Hide all buttons inside the header EXCEPT the sidebar collapse button */
-header[data-testid="stHeader"] button {{
-    display: none !important;
-}}
 header[data-testid="stHeader"] button[data-testid="collapsedControl"] {{
     display: inline-flex !important;
     color: var(--text-color) !important;
