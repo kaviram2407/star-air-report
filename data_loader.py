@@ -328,8 +328,17 @@ def load_settlement_reconciliation_data():
             df = pd.read_csv(path)
         else:
             raise RuntimeError(f"Database query failed and local CSV not found. Error: {e}")
-            
     df['Settlement_Date'] = pd.to_datetime(df['Settlement_Date'])
     return df
+
+
+def filter_dataframe(df, selected_years=None, selected_months=None, year_col='year', month_col='month_name'):
+    filtered_df = df.copy()
+    if selected_years is not None and len(selected_years) > 0:
+        filtered_df = filtered_df[filtered_df[year_col].isin(selected_years)]
+    if selected_months is not None and len(selected_months) > 0:
+        filtered_df = filtered_df[filtered_df[month_col].isin(selected_months)]
+    return filtered_df
+
 
 

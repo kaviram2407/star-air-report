@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 
 # Set page configuration
+# Set page configuration
 st.set_page_config(
     page_title="Star Air BI Portal",
     page_icon="✈️",
@@ -14,26 +15,140 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for Premium Design & Sidebar Animations
-st.markdown("""
+# Render Sidebar Title & Logo
+st.sidebar.markdown(
+    "<div style='text-align: center; padding: 10px 0;'>"
+    "<h2 style='color: #00b0ff; margin-bottom: 0;'>STAR AIR</h2>"
+    "<p style='font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;'>Business Intelligence</p>"
+    "</div>", 
+    unsafe_allow_html=True
+)
+
+st.sidebar.markdown("---")
+
+# Theme selector
+theme_mode = st.sidebar.selectbox(
+    "🌓 Theme Mode",
+    ["System Default", "Dark", "Light"],
+    index=0
+)
+
+st.sidebar.markdown("---")
+
+# Generate CSS Variables based on Theme Mode selection
+theme_css = ""
+if theme_mode == "Dark":
+    theme_css = """
+    :root {
+        --bg-color: #0e1117;
+        --text-color: #ffffff;
+        --sidebar-bg: #080c11;
+        --sidebar-text: rgba(255, 255, 255, 0.7);
+        --card-bg: rgba(255, 255, 255, 0.03);
+        --card-border: rgba(255, 255, 255, 0.08);
+        --metric-header-color: rgba(255, 255, 255, 0.5);
+        --metric-value-gradient-start: #ffffff;
+        --border-color: rgba(255, 255, 255, 0.05);
+        --label-bg: rgba(255, 255, 255, 0.02);
+        --label-checked-bg: linear-gradient(135deg, rgba(0, 176, 255, 0.12) 0%, rgba(42, 157, 143, 0.12) 100%);
+        --label-checked-border: rgba(0, 176, 255, 0.4);
+        --label-hover-bg: rgba(255, 255, 255, 0.06);
+        --grid-color: rgba(255, 255, 255, 0.05);
+        --info-box-bg: rgba(0, 176, 255, 0.05);
+        --text-muted: rgba(255, 255, 255, 0.4);
+    }
+    """
+elif theme_mode == "Light":
+    theme_css = """
+    :root {
+        --bg-color: #ffffff;
+        --text-color: #1a1a1a;
+        --sidebar-bg: #f8f9fa;
+        --sidebar-text: rgba(0, 0, 0, 0.7);
+        --card-bg: rgba(0, 0, 0, 0.02);
+        --card-border: rgba(0, 0, 0, 0.08);
+        --metric-header-color: rgba(0, 0, 0, 0.55);
+        --metric-value-gradient-start: #1a1a1a;
+        --border-color: rgba(0, 0, 0, 0.08);
+        --label-bg: rgba(0, 0, 0, 0.015);
+        --label-checked-bg: linear-gradient(135deg, rgba(0, 176, 255, 0.08) 0%, rgba(42, 157, 143, 0.08) 100%);
+        --label-checked-border: rgba(0, 176, 255, 0.5);
+        --label-hover-bg: rgba(0, 0, 0, 0.04);
+        --grid-color: rgba(0, 0, 0, 0.08);
+        --info-box-bg: rgba(0, 176, 255, 0.03);
+        --text-muted: rgba(0, 0, 0, 0.5);
+    }
+    """
+else:  # System Default
+    theme_css = """
+    :root {
+        --bg-color: #0e1117;
+        --text-color: #ffffff;
+        --sidebar-bg: #080c11;
+        --sidebar-text: rgba(255, 255, 255, 0.7);
+        --card-bg: rgba(255, 255, 255, 0.03);
+        --card-border: rgba(255, 255, 255, 0.08);
+        --metric-header-color: rgba(255, 255, 255, 0.5);
+        --metric-value-gradient-start: #ffffff;
+        --border-color: rgba(255, 255, 255, 0.05);
+        --label-bg: rgba(255, 255, 255, 0.02);
+        --label-checked-bg: linear-gradient(135deg, rgba(0, 176, 255, 0.12) 0%, rgba(42, 157, 143, 0.12) 100%);
+        --label-checked-border: rgba(0, 176, 255, 0.4);
+        --label-hover-bg: rgba(255, 255, 255, 0.06);
+        --grid-color: rgba(255, 255, 255, 0.05);
+        --info-box-bg: rgba(0, 176, 255, 0.05);
+        --text-muted: rgba(255, 255, 255, 0.4);
+    }
+    @media (prefers-color-scheme: light) {
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #1a1a1a;
+            --sidebar-bg: #f8f9fa;
+            --sidebar-text: rgba(0, 0, 0, 0.7);
+            --card-bg: rgba(0, 0, 0, 0.02);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --metric-header-color: rgba(0, 0, 0, 0.55);
+            --metric-value-gradient-start: #1a1a1a;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --label-bg: rgba(0, 0, 0, 0.015);
+            --label-checked-bg: linear-gradient(135deg, rgba(0, 176, 255, 0.08) 0%, rgba(42, 157, 143, 0.08) 100%);
+            --label-checked-border: rgba(0, 176, 255, 0.5);
+            --label-hover-bg: rgba(0, 0, 0, 0.04);
+            --grid-color: rgba(0, 0, 0, 0.08);
+            --info-box-bg: rgba(0, 176, 255, 0.03);
+            --text-muted: rgba(0, 0, 0, 0.5);
+        }
+    }
+    """
+
+# Custom CSS for Premium Design & Sidebar Animations with Variables
+st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
-/* Main font styling */
-html, body, [data-testid="stSidebar"], .stMarkdown, p, div, label {
-    font-family: 'Outfit', sans-serif !important;
-}
+{theme_css}
 
-h1, h2, h3, h4, h5, h6 {
+/* Main font styling */
+html, body, [data-testid="stSidebar"], .stMarkdown, p, div, label {{
+    font-family: 'Outfit', sans-serif !important;
+}}
+
+h1, h2, h3, h4, h5, h6 {{
     font-family: 'Outfit', sans-serif !important;
     font-weight: 700 !important;
     letter-spacing: -0.02em !important;
-}
+}}
+
+/* Force background and text colors */
+.stApp, html, body {{
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+}}
 
 /* Glassmorphism card utility with smooth transitions & hover glow */
-.card-container {
-    background: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+.card-container {{
+    background: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
     border-radius: 16px !important;
     padding: 24px !important;
     margin-bottom: 20px !important;
@@ -41,153 +156,293 @@ h1, h2, h3, h4, h5, h6 {
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
+    color: var(--text-color) !important;
+}}
 
-.card-container:hover {
+.card-container:hover {{
     transform: translateY(-5px) !important;
     border-color: rgba(0, 176, 255, 0.3) !important;
     box-shadow: 0 12px 40px rgba(0, 176, 255, 0.15) !important;
-}
+}}
 
 /* Metric styling inside cards */
-.metric-header {
+.metric-header {{
     font-size: 13px !important;
     font-weight: 600 !important;
-    color: rgba(255, 255, 255, 0.5) !important;
+    color: var(--metric-header-color) !important;
     margin-bottom: 8px !important;
     text-transform: uppercase !important;
     letter-spacing: 0.08em !important;
-}
+}}
 
-.metric-value {
+.metric-value {{
     font-size: 34px !important;
     font-weight: 750 !important;
-    color: #ffffff !important;
     margin-bottom: 4px !important;
     letter-spacing: -0.01em !important;
-    background: linear-gradient(135deg, #ffffff 0%, #00b0ff 100%) !important;
+    background: linear-gradient(135deg, var(--metric-value-gradient-start) 0%, #00b0ff 100%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
-}
+}}
 
-.metric-delta {
+.metric-delta {{
     font-size: 13px !important;
     font-weight: 500;
-}
+}}
 
-.delta-up {
+.delta-up {{
     color: #00e676 !important;
-}
+}}
 
-.delta-down {
+.delta-down {{
     color: #ff1744 !important;
-}
+}}
 
 /* Sidebar Styling & Custom Layout */
-[data-testid="stSidebar"] {
-    background-color: #080c11 !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-}
+[data-testid="stSidebar"] {{
+    background-color: var(--sidebar-bg) !important;
+    border-right: 1px solid var(--border-color) !important;
+}}
+
+/* Ensure all labels and form/selectbox texts inside sidebar are highly visible */
+[data-testid="stSidebar"] label, [data-testid="stSidebar"] label * {{
+    color: var(--sidebar-text) !important;
+}}
 
 /* Beautiful navigation tabs styling */
-[data-testid="stSidebar"] div[role="radiogroup"] {
+[data-testid="stSidebar"] div[role="radiogroup"] {{
     display: flex !important;
     flex-direction: column !important;
     gap: 10px !important;
     padding-top: 10px !important;
-}
+}}
 
-[data-testid="stSidebar"] div[role="radiogroup"] label {
-    background: rgba(255, 255, 255, 0.02) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+[data-testid="stSidebar"] div[role="radiogroup"] label {{
+    background: var(--label-bg) !important;
+    border: 1px solid var(--border-color) !important;
     border-radius: 12px !important;
     padding: 12px 18px !important;
-    color: rgba(255, 255, 255, 0.7) !important;
+    color: var(--sidebar-text) !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     cursor: pointer !important;
     margin: 0 !important;
     width: 100% !important;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
-}
+}}
+
+/* Force all radio list option texts to inherit selected color variables */
+[data-testid="stSidebar"] div[role="radiogroup"] label * {{
+    color: inherit !important;
+}}
 
 /* Hide native streamlit checkmark elements */
 [data-testid="stSidebar"] div[role="radiogroup"] label div[role="presentation"],
-[data-testid="stSidebar"] div[role="radiogroup"] label [data-testid="stFiberManualRecord"] {
+[data-testid="stSidebar"] div[role="radiogroup"] label [data-testid="stFiberManualRecord"] {{
     display: none !important;
-}
+}}
 
 /* Selection state */
-[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
-    background: linear-gradient(135deg, rgba(0, 176, 255, 0.12) 0%, rgba(42, 157, 143, 0.12) 100%) !important;
-    border: 1px solid rgba(0, 176, 255, 0.4) !important;
+[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {{
+    background: var(--label-checked-bg) !important;
+    border: 1px solid var(--label-checked-border) !important;
     border-left: 5px solid #00b0ff !important;
-    color: #ffffff !important;
+    color: var(--text-color) !important;
     font-weight: 600 !important;
     box-shadow: 0 8px 24px rgba(0, 176, 255, 0.15) !important;
     transform: scale(1.03) translateX(8px) !important;
-}
+}}
 
 /* Hover state */
-[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-    background: rgba(255, 255, 255, 0.06) !important;
+[data-testid="stSidebar"] div[role="radiogroup"] label:hover {{
+    background: var(--label-hover-bg) !important;
     border-color: rgba(0, 176, 255, 0.25) !important;
-    color: #ffffff !important;
+    color: var(--text-color) !important;
     transform: scale(1.02) translateX(4px) !important;
-}
+}}
 
 /* Native streamlit metrics upgrade */
-div[data-testid="stMetric"] {
-    background: rgba(255, 255, 255, 0.02) !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+div[data-testid="stMetric"] {{
+    background: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
     border-radius: 12px !important;
     padding: 16px 20px !important;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
     transition: all 0.3s ease !important;
-}
-div[data-testid="stMetric"]:hover {
+}}
+div[data-testid="stMetric"]:hover {{
     transform: translateY(-3px) !important;
     border-color: rgba(0, 176, 255, 0.2) !important;
     box-shadow: 0 8px 25px rgba(0, 176, 255, 0.1) !important;
-}
+}}
+div[data-testid="stMetric"] label p, div[data-testid="stMetric"] [data-testid="stMetricValue"] {{
+    color: var(--text-color) !important;
+}}
 
 /* Custom badges */
-.badge {
+.badge {{
     display: inline-block;
     padding: 4px 8px;
     border-radius: 6px;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
-}
-.badge-success { background-color: rgba(0, 230, 118, 0.15); color: #00e676; }
-.badge-danger { background-color: rgba(255, 23, 68, 0.15); color: #ff1744; }
-.badge-warning { background-color: rgba(255, 235, 59, 0.15); color: #ffeb3b; }
-.badge-info { background-color: rgba(0, 176, 255, 0.15); color: #00b0ff; }
+}}
+.badge-success {{ background-color: rgba(0, 230, 118, 0.15); color: #00e676; }}
+.badge-danger {{ background-color: rgba(255, 23, 68, 0.15); color: #ff1744; }}
+.badge-warning {{ background-color: rgba(255, 235, 59, 0.15); color: #ffeb3b; }}
+.badge-info {{ background-color: rgba(0, 176, 255, 0.15); color: #00b0ff; }}
 
 /* Custom alerts */
-.info-box {
-    background: rgba(0, 176, 255, 0.05);
+.info-box {{
+    background: var(--info-box-bg) !important;
     border-left: 4px solid #00b0ff;
     padding: 16px;
     border-radius: 0 12px 12px 0;
     margin-bottom: 20px;
-}
+    color: var(--text-color) !important;
+}}
 
-/* Hide default streamlit headers and footer */
-#MainMenu {visibility: hidden;}
-header {visibility: hidden;}
-footer {visibility: hidden;}
+/* Keep header container transparent */
+header[data-testid="stHeader"] {{
+    background-color: transparent !important;
+    border-bottom: none !important;
+}}
+
+/* Hide default streamlit MainMenu, Deploy button, and other header action elements */
+#MainMenu {{
+    display: none !important;
+}}
+div[data-testid="stHeaderActionElements"] {{
+    display: none !important;
+}}
+footer {{
+    display: none !important;
+}}
+
+/* Hide all buttons inside the header EXCEPT the sidebar collapse button */
+header[data-testid="stHeader"] button {{
+    display: none !important;
+}}
+header[data-testid="stHeader"] button[data-testid="collapsedControl"] {{
+    display: inline-flex !important;
+    color: var(--text-color) !important;
+    background-color: var(--sidebar-bg) !important;
+    border-right: 1px solid var(--border-color) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    border-radius: 0 0 12px 0 !important;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.1) !important;
+}}
+header[data-testid="stHeader"] button[data-testid="collapsedControl"] svg {{
+    fill: var(--text-color) !important;
+}}
+
+/* st.tabs styling - forces tabs text color to respect theme variables */
+button[data-baseweb="tab"] {{
+    color: var(--text-muted) !important;
+    background-color: transparent !important;
+}}
+button[data-baseweb="tab"] * {{
+    color: inherit !important;
+}}
+button[data-baseweb="tab"][aria-selected="true"] {{
+    color: var(--text-color) !important;
+    border-bottom-color: #00b0ff !important;
+}}
+button[data-baseweb="tab"][aria-selected="true"] * {{
+    color: inherit !important;
+    font-weight: 600 !important;
+}}
+
+/* Forms & Input fields styling */
+div[data-testid="stForm"] {{
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 12px !important;
+}}
+
+/* Custom styles for Streamlit widgets to match the selected theme */
+div[data-baseweb="input"] {{
+    background-color: var(--bg-color) !important;
+    border: 1px solid var(--card-border) !important;
+    color: var(--text-color) !important;
+}}
+
+div[data-baseweb="input"] input {{
+    color: var(--text-color) !important;
+}}
+
+div[data-baseweb="select"] > div {{
+    background-color: var(--bg-color) !important;
+    border: 1px solid var(--card-border) !important;
+    color: var(--text-color) !important;
+}}
+
+div[data-baseweb="select"] span {{
+    color: var(--text-color) !important;
+}}
+
+div[role="listbox"] {{
+    background-color: var(--bg-color) !important;
+    border: 1px solid var(--card-border) !important;
+}}
+
+div[role="listbox"] * {{
+    color: var(--text-color) !important;
+}}
+
+div[role="listbox"] li {{
+    background-color: var(--bg-color) !important;
+}}
+
+div[role="listbox"] li:hover {{
+    background-color: var(--label-hover-bg) !important;
+}}
+
+/* Custom styling for multiselect elements to ensure readability */
+div[data-baseweb="select"] div[role="button"] {{
+    background-color: var(--label-hover-bg) !important;
+    color: var(--text-color) !important;
+}}
+
+/* Multiselect tags */
+span[data-baseweb="tag"] {{
+    background-color: var(--label-hover-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--card-border) !important;
+}}
+
+/* Buttons */
+.stButton>button {{
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--card-border) !important;
+    transition: all 0.3s ease !important;
+}}
+
+.stButton>button:hover {{
+    border-color: #00b0ff !important;
+    color: #00b0ff !important;
+}}
+
+/* Custom styled charts fonts & grids via variables */
+.js-plotly-plot .gtitle, .js-plotly-plot .xtitle, .js-plotly-plot .ytitle, .js-plotly-plot .legendtext, .js-plotly-plot .tick text {{
+    fill: var(--text-color) !important;
+}}
+.js-plotly-plot .gridpath {{
+    stroke: var(--grid-color) !important;
+}}
 </style>
 """, unsafe_allow_html=True)
 
-# Import Data Loader functions for specified tables only
+# Import Data Loader functions and utilities
 from data_loader import (
     load_route_profitability_data,
     load_uplift_data,
     load_billing_data,
     load_overall_revenue,
     load_settlement_reconciliation_data,
-    get_active_connection_details
+    get_active_connection_details,
+    filter_dataframe
 )
 
 # Check connection credentials
@@ -278,16 +533,9 @@ route_raw, uplift_raw, billing_raw, overall_rev_raw, settlement_raw = get_all_da
 if overall_rev_raw is None:
     st.stop()
 
-# Sidebar Title & Navigation
-st.sidebar.markdown(
-    "<div style='text-align: center; padding: 10px 0;'>"
-    "<h2 style='color: #00b0ff; margin-bottom: 0;'>STAR AIR</h2>"
-    "<p style='font-size: 13px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.1em;'>Business Intelligence</p>"
-    "</div>", 
-    unsafe_allow_html=True
-)
-
-st.sidebar.markdown("---")
+# Define Plotly template based on active theme
+plotly_template = 'plotly_white' if theme_mode == "Light" else 'plotly_dark'
+grid_color = 'rgba(0, 0, 0, 0.08)' if theme_mode == "Light" else 'rgba(255, 255, 255, 0.05)'
 
 page = st.sidebar.radio(
     "Navigation Modules",
@@ -310,21 +558,12 @@ month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', '
 all_months = sorted(overall_rev_raw['month_name'].unique(), key=lambda m: month_order.index(m) if m in month_order else 0)
 selected_months = st.sidebar.multiselect("Months", all_months, default=all_months)
 
-# Apply global filtering function
-def filter_dataframe(df, year_col='year', month_col='month_name'):
-    filtered_df = df.copy()
-    if selected_years:
-        filtered_df = filtered_df[filtered_df[year_col].isin(selected_years)]
-    if selected_months:
-        filtered_df = filtered_df[filtered_df[month_col].isin(selected_months)]
-    return filtered_df
-
 # Filter all datasets dynamically
-overall_rev_df = filter_dataframe(overall_rev_raw)
-billing_df = filter_dataframe(billing_raw, year_col='year', month_col='month_name')
-route_df = filter_dataframe(route_raw)
-uplift_df = filter_dataframe(uplift_raw)
-settlement_df = filter_dataframe(settlement_raw, year_col='year', month_col='month_name')
+overall_rev_df = filter_dataframe(overall_rev_raw, selected_years, selected_months)
+billing_df = filter_dataframe(billing_raw, selected_years, selected_months, year_col='year', month_col='month_name')
+route_df = filter_dataframe(route_raw, selected_years, selected_months)
+uplift_df = filter_dataframe(uplift_raw, selected_years, selected_months)
+settlement_df = filter_dataframe(settlement_raw, selected_years, selected_months, year_col='year', month_col='month_name')
 
 # Sidebar Sync Control
 st.sidebar.markdown("---")
@@ -346,7 +585,7 @@ if st.sidebar.button("Trigger Cloud Fetch"):
 
 st.sidebar.markdown("---")
 st.sidebar.markdown(
-    f"<div style='font-size: 11px; color: rgba(255,255,255,0.4); text-align: center;'>"
+    f"<div style='font-size: 11px; color: var(--text-muted); text-align: center;'>"
     f"Active Revenue Records: {len(overall_rev_df):,}<br>"
     f"Cloud Views Synchronized"
     f"</div>", 
@@ -443,11 +682,11 @@ if page == "📊 KPI Dashboard":
                 text="<b>Monthly Revenue Trend: Gross Sales vs. Realized Net Revenue</b>",
                 font=dict(size=14, color="#00b0ff")
             ),
-            template='plotly_dark',
+            template=plotly_template,
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
             xaxis=dict(showgrid=False),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title="Amount (AED)"),
+            yaxis=dict(gridcolor=grid_color, title="Amount (AED)"),
             margin=dict(l=20, r=20, t=50, b=20),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
             transition_duration=500
@@ -489,10 +728,10 @@ if page == "📊 KPI Dashboard":
                 text="<b>Net Revenue Funnel: Margin Leakages to Partners and Agents</b>",
                 font=dict(size=13, color="#00b0ff")
             ),
-            template='plotly_dark',
+            template=plotly_template,
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
-            yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title="Amount (AED)"),
+            yaxis=dict(gridcolor=grid_color, title="Amount (AED)"),
             margin=dict(l=20, r=20, t=50, b=20),
             transition_duration=500
         )
@@ -545,7 +784,7 @@ elif page == "✈️ Route Performance & Capacity":
             color_discrete_sequence=px.colors.qualitative.Plotly
         )
         fig_rank.update_layout(
-            template='plotly_dark',
+            template=plotly_template,
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
             yaxis=dict(autorange='reversed', tickmode='linear', dtick=1, title="Revenue Rank"),
@@ -605,10 +844,10 @@ elif page == "✈️ Route Performance & Capacity":
                 color_discrete_map={'Weekend Flights': '#ffeb3b', 'Weekday Flights': '#00b0ff'}
             )
             fig_day.update_layout(
-                template='plotly_dark',
+                template=plotly_template,
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
-                yaxis=dict(title='Load Factor (%)', range=[0, 100], gridcolor='rgba(255,255,255,0.05)'),
+                yaxis=dict(title='Load Factor (%)', range=[0, 100], gridcolor=grid_color),
                 xaxis=dict(title=''),
                 showlegend=False,
                 margin=dict(l=20, r=20, t=30, b=20)
@@ -635,11 +874,11 @@ elif page == "✈️ Route Performance & Capacity":
                 labels={'Total_Seats': 'Total Seats Offered', 'Passenger_Count': 'Total Flown Passengers', 'Load_Factor': 'Avg Load Factor (%)'}
             )
             fig_scat.update_layout(
-                template='plotly_dark',
+                template=plotly_template,
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
-                xaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
-                yaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
+                xaxis=dict(gridcolor=grid_color),
+                yaxis=dict(gridcolor=grid_color),
                 margin=dict(l=20, r=20, t=30, b=20)
             )
             st.plotly_chart(fig_scat, use_container_width=True)
@@ -673,13 +912,13 @@ elif page == "✈️ Route Performance & Capacity":
             with col_metric:
                 st.markdown("<div style='text-align: center; font-weight: bold; margin-bottom:10px;'>METRIC</div>", unsafe_allow_html=True)
                 for label, _, _, _ in metrics_list:
-                    st.markdown(f"<div style='text-align: center; padding: 10px; font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.05);'>{label}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='text-align: center; padding: 10px; font-weight: 500; border-bottom: 1px solid var(--border-color);'>{label}</div>", unsafe_allow_html=True)
             
             with col_a:
                 st.markdown(f"<div style='text-align: center; font-weight: bold; color: #00b0ff; margin-bottom:10px;'>{route_a}</div>", unsafe_allow_html=True)
                 for _, val_a, val_b, m_type in metrics_list:
                     is_better = val_a > val_b if "Load Factor" in label or val_a != 0 else val_a > val_b
-                    color = "#00e676" if is_better else "rgba(255,255,255,0.8)"
+                    color = "#00e676" if is_better else "var(--text-color)"
                     
                     if m_type == 'currency':
                         disp = f"AED {val_a:,.2f}"
@@ -687,13 +926,13 @@ elif page == "✈️ Route Performance & Capacity":
                         disp = f"{val_a:.2f}%"
                     else:
                         disp = f"{val_a:,.0f}"
-                    st.markdown(f"<div style='text-align: center; padding: 10px; color: {color}; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 600;'>{disp}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='text-align: center; padding: 10px; color: {color}; border-bottom: 1px solid var(--border-color); font-weight: 600;'>{disp}</div>", unsafe_allow_html=True)
                     
             with col_b:
                 st.markdown(f"<div style='text-align: center; font-weight: bold; color: #2a9d8f; margin-bottom:10px;'>{route_b}</div>", unsafe_allow_html=True)
                 for _, val_a, val_b, m_type in metrics_list:
                     is_better = val_b > val_a
-                    color = "#00e676" if is_better else "rgba(255,255,255,0.8)"
+                    color = "#00e676" if is_better else "var(--text-color)"
                     
                     if m_type == 'currency':
                         disp = f"AED {val_b:,.2f}"
@@ -701,7 +940,7 @@ elif page == "✈️ Route Performance & Capacity":
                         disp = f"{val_b:.2f}%"
                     else:
                         disp = f"{val_b:,.0f}"
-                    st.markdown(f"<div style='text-align: center; padding: 10px; color: {color}; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 600;'>{disp}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='text-align: center; padding: 10px; color: {color}; border-bottom: 1px solid var(--border-color); font-weight: 600;'>{disp}</div>", unsafe_allow_html=True)
 
 # ----------------- PAGE 3: INWARD BILLING AUDIT -----------------
 elif page == "🔍 Inward Billing Audit":
@@ -789,11 +1028,11 @@ elif page == "🔍 Inward Billing Audit":
                 marker=dict(size=8)
             ))
             fig_trend.update_layout(
-                template='plotly_dark',
+                template=plotly_template,
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
                 xaxis=dict(showgrid=False),
-                yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title='Percentage (%)', range=[0, 100]),
+                yaxis=dict(gridcolor=grid_color, title='Percentage (%)', range=[0, 100]),
                 margin=dict(l=20, r=20, t=30, b=20),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
             )
@@ -821,12 +1060,12 @@ elif page == "🔍 Inward Billing Audit":
                 marker_color='#ff1744'
             ))
             fig_bars.update_layout(
-                template='plotly_dark',
+                template=plotly_template,
                 barmode='group',
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
                 xaxis=dict(showgrid=False),
-                yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title='AED'),
+                yaxis=dict(gridcolor=grid_color, title='AED'),
                 margin=dict(l=20, r=20, t=30, b=20),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
             )
@@ -892,7 +1131,7 @@ elif page == "🔍 Inward Billing Audit":
                 st.markdown(
                     f"<div class='card-container'>"
                     f"<div class='metric-header'>Star Air Sale Value</div>"
-                    f"<div class='metric-value'>${total_sales_val/1e6:.2f}M</div>"
+                    f"<div class='metric-value'>AED {total_sales_val/1e6:.2f}M</div>"
                     f"<div class='metric-delta'>Original Bookings</div>"
                     f"</div>",
                     unsafe_allow_html=True
@@ -901,7 +1140,7 @@ elif page == "🔍 Inward Billing Audit":
                 st.markdown(
                     f"<div class='card-container'>"
                     f"<div class='metric-header'>Partner Billed Value</div>"
-                    f"<div class='metric-value'>${total_billed_val/1e6:.2f}M</div>"
+                    f"<div class='metric-value'>AED {total_billed_val/1e6:.2f}M</div>"
                     f"<div class='metric-delta'>Inward Claims</div>"
                     f"</div>",
                     unsafe_allow_html=True
@@ -910,7 +1149,7 @@ elif page == "🔍 Inward Billing Audit":
                 st.markdown(
                     f"<div class='card-container'>"
                     f"<div class='metric-header'>Accepted to Pay</div>"
-                    f"<div class='metric-value'>${total_settled_val/1e6:.2f}M</div>"
+                    f"<div class='metric-value'>AED {total_settled_val/1e6:.2f}M</div>"
                     f"<div class='metric-delta'><span class='delta-up'>Acceptance: {acceptance_rate:.2f}%</span></div>"
                     f"</div>",
                     unsafe_allow_html=True
@@ -922,7 +1161,7 @@ elif page == "🔍 Inward Billing Audit":
                 st.markdown(
                     f"<div class='card-container'>"
                     f"<div class='metric-header'>Net Retention Surplus</div>"
-                    f"<div class='metric-value' style='background: linear-gradient(135deg, #ffffff 0%, {val_color} 100%) !important;'>${net_retention/1e6:.2f}M</div>"
+                    f"<div class='metric-value' style='background: linear-gradient(135deg, #ffffff 0%, {val_color} 100%) !important;'>AED {net_retention/1e6:.2f}M</div>"
                     f"<div class='metric-delta'><span class='{color_class}'>{sign} ({retention_margin_pct:.2f}%)</span></div>"
                     f"</div>",
                     unsafe_allow_html=True
@@ -931,7 +1170,7 @@ elif page == "🔍 Inward Billing Audit":
             # Monthly comparison plots
             c_left, c_right = st.columns(2)
             with c_left:
-                st.subheader("Monthly Sales vs. Billed vs. Accepted Claims (USD)")
+                st.subheader("Monthly Sales vs. Billed vs. Accepted Claims (AED)")
                 monthly_settlement = settlement_df.groupby(['year', 'month_name']).agg({
                     'Sales_Value': 'sum',
                     'Billing_Value': 'sum',
@@ -962,12 +1201,12 @@ elif page == "🔍 Inward Billing Audit":
                     marker_color='#2a9d8f'
                 ))
                 fig_monthly.update_layout(
-                    template='plotly_dark',
+                    template=plotly_template,
                     barmode='group',
                     plot_bgcolor='rgba(0,0,0,0)',
                     paper_bgcolor='rgba(0,0,0,0)',
                     xaxis=dict(showgrid=False),
-                    yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title='USD'),
+                    yaxis=dict(gridcolor=grid_color, title='AED'),
                     margin=dict(l=20, r=20, t=30, b=20),
                     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
                 )
@@ -996,36 +1235,38 @@ elif page == "🔍 Inward Billing Audit":
                     marker=dict(size=8)
                 ))
                 fig_rates.update_layout(
-                    template='plotly_dark',
+                    template=plotly_template,
                     plot_bgcolor='rgba(0,0,0,0)',
                     paper_bgcolor='rgba(0,0,0,0)',
                     xaxis=dict(showgrid=False),
-                    yaxis=dict(gridcolor='rgba(255,255,255,0.05)', title='Percentage (%)', range=[0, 100]),
+                    yaxis=dict(gridcolor=grid_color, title='Percentage (%)', range=[0, 100]),
                     margin=dict(l=20, r=20, t=30, b=20),
                     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
                 )
                 st.plotly_chart(fig_rates, use_container_width=True)
                 
-            # Currency ledger
-            st.subheader("Detailed Currency Settlement Ledger")
-            currency_ledger = settlement_df.groupby('Currency').agg({
+            # Detailed Settlement Ledger
+            st.subheader("Detailed Settlement Ledger")
+            settlement_ledger = settlement_df.groupby('year').agg({
                 'Sales_Value': 'sum',
                 'Billing_Value': 'sum',
                 'Settlement_Value': 'sum',
                 'Rejected_Value': 'sum'
             }).reset_index()
-            currency_ledger['Net_Retention'] = currency_ledger['Sales_Value'] - currency_ledger['Settlement_Value']
-            currency_ledger['Acceptance_Rate'] = ((currency_ledger['Settlement_Value'] * 100.0) / currency_ledger['Billing_Value']).round(2)
+            settlement_ledger['Net_Retention'] = settlement_ledger['Sales_Value'] - settlement_ledger['Settlement_Value']
+            settlement_ledger['Acceptance_Rate'] = ((settlement_ledger['Settlement_Value'] * 100.0) / settlement_ledger['Billing_Value']).round(2)
             
-            styled_curr = currency_ledger.copy()
-            styled_curr['Sales_Value'] = styled_curr['Sales_Value'].map(lambda x: f"${x:,.2f}")
-            styled_curr['Billing_Value'] = styled_curr['Billing_Value'].map(lambda x: f"${x:,.2f}")
-            styled_curr['Settlement_Value'] = styled_curr['Settlement_Value'].map(lambda x: f"${x:,.2f}")
-            styled_curr['Rejected_Value'] = styled_curr['Rejected_Value'].map(lambda x: f"${x:,.2f}")
-            styled_curr['Net_Retention'] = styled_curr['Net_Retention'].map(lambda x: f"${x:,.2f}")
-            styled_curr['Acceptance_Rate'] = styled_curr['Acceptance_Rate'].map(lambda x: f"{x:.2f}%")
+            styled_settle = settlement_ledger.copy()
+            styled_settle['Sales_Value'] = styled_settle['Sales_Value'].map(lambda x: f"AED {x:,.2f}")
+            styled_settle['Billing_Value'] = styled_settle['Billing_Value'].map(lambda x: f"AED {x:,.2f}")
+            styled_settle['Settlement_Value'] = styled_settle['Settlement_Value'].map(lambda x: f"AED {x:,.2f}")
+            styled_settle['Rejected_Value'] = styled_settle['Rejected_Value'].map(lambda x: f"AED {x:,.2f}")
+            styled_settle['Net_Retention'] = styled_settle['Net_Retention'].map(lambda x: f"AED {x:,.2f}")
+            styled_settle['Acceptance_Rate'] = styled_settle['Acceptance_Rate'].map(lambda x: f"{x:.2f}%")
             
-            st.dataframe(styled_curr, hide_index=True, use_container_width=True)
+            styled_settle.rename(columns={'year': 'Year'}, inplace=True)
+            
+            st.dataframe(styled_settle, hide_index=True, use_container_width=True)
             
             # Route-level comparison ledger
             st.subheader("Route-level Interline Settlement Deficit Audit (AED)")
@@ -1072,9 +1313,17 @@ elif page == "🔍 Inward Billing Audit":
                 <h4 style='color: #00b0ff; margin-top:0;'>💡 Settlement Audit & Pricing Insight</h4>
                 <ul>
                     <li><b>Pricing Discrepancy & Leakage:</b> Comparing partner billing with Star Air's sales shows that our passenger ticket fares cover partner codeshare costs. The net retention surplus (Sale Value - Accepted Payment) is positive on average, meaning Star Air retains margin.</li>
-                    <li><b>Auditing Efficiency:</b> By rejecting billing discrepancies (average rejection rate: <b>{rejection_rate:.2f}%</b>), Star Air has saved <b>${total_rejected_val/1e6:.2f}M</b> from partner claims.</li>
+                    <li><b>Auditing Efficiency:</b> By rejecting billing discrepancies (average rejection rate: <b>{rejection_rate:.2f}%</b>), Star Air has saved <b>AED {total_rejected_val/1e6:.2f}M</b> from partner claims.</li>
                     <li><b>Actionable Remedy:</b> The Commercial team must audit routes with low retention margins (indicated in red/negative surplus) and renegotiate interline codeshare rates or adjust our passenger ticket pricing.</li>
                 </ul>
             </div>
             """, unsafe_allow_html=True)
 
+# Footer credits (rendered at the bottom of every page)
+st.markdown("---")
+st.markdown(
+    "<div style='text-align: center; padding: 15px 0; font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em;'>"
+    "Star Air BI Portal | Dashboard done by <b>Kaviram</b>"
+    "</div>",
+    unsafe_allow_html=True
+)
